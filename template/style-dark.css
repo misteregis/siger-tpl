@@ -1,0 +1,64 @@
+/* ========= Dark Mode ========= */
+@media(prefers-color-scheme: dark) {
+    :root {
+        --foreground: #16191d;
+        --background: #16191d;
+    }
+
+    ::selection {background-color: #7a7d7f}
+    /*body {background-color: var(--background);}*/
+
+    a {color: #777}
+    a:hover {color: #0087b9}
+
+    #wrap > .container {background-color: #2d3139}
+    #wrap > .container > h3 {color: #707e93}
+
+    .navbar-default {
+        background: #2d3139;
+        border-color: #363636;
+        background: -moz-linear-gradient(top, #2d31390%, #373e47100%);
+    }
+    .navbar-brand {
+        color: #d6dae0;
+    }
+
+    #footer {
+        background: #2d3139;
+        border-color: #363636;
+        background: -moz-linear-gradient(top, #2d31390%, #373e47100%);
+    }
+    #footer > .container > #pageload {color: #707e93;}
+
+    .text-muted {color: #707e93;}
+
+    *::-webkit-scrollbar-track {
+        box-shadow: inset 0px 0px 0px 2px #2d3139;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: #1d2025;
+    }
+
+    .overlay {
+        background: rgba(0,0,0,0.7);
+        background: -ms-radial-gradient(center, ellipse farthest-corner, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        background: -moz-radial-gradient(center, ellipse farthest-corner, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        background: -o-radial-gradient(center, ellipse farthest-corner, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        background: -webkit-gradient(radial, center center, 0, center center, 497, color-stop(0, rgba(0,0,0,0.3)), color-stop(1, rgba(0,0,0,0.7)));
+        background: -webkit-radial-gradient(center, ellipse farthest-corner, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        background: radial-gradient(ellipse farthest-corner at center, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+        opacity: .5;
+    }
+
+    #menu > ul > li:first-child a > span {color:#fff}
+
+    #menu > ul > li {color:#d6dae0}
+
+    .input-group .form-control {
+        color: #d6dae0;
+        border-color: #16191d;
+        background-color: #24282f
+    }
+}
+/*# sourceURL=siger/template/style-dark.css */

@@ -1,0 +1,34 @@
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    ::selection {
+        background-color: #c6c6c6;
+        color: var(#191919);
+    }
+    
+    body {
+        color: #343a40;
+        background-color: #eee;
+    }
+    
+    a {color: #005e81;}
+    a:hover {color: #333;}
+
+    .navbar-default {
+        background: #eaeaea;
+        background: -moz-linear-gradient(top, #eaeaea 0%, #f8f8f8 100%);
+        background: -webkit-linear-gradient(top, #eaeaea 0%,#f8f8f8 100%);
+        background: linear-gradient(to bottom, #eaeaea 0%,#f8f8f8 100%);
+
+
+    }
+
+    #footer {
+        height: 60px;
+        position: fixed;
+        border-top: 1px solid #e2e2e2;
+        background: #f8f8f8;
+        background: -moz-linear-gradient(top, #f8f8f8 0%, #eaeaea 100%);
+        background: -webkit-linear-gradient(top, #f8f8f8 0%,#eaeaea 100%);
+        background: linear-gradient(to bottom, #f8f8f8 0%,#eaeaea 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8f8f8', endColorstr='#eaeaea',GradientType=0 );
+    }
+}
