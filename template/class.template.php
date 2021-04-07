@@ -77,6 +77,7 @@ class Template
     private $builded = false;
     private $css = array();
     private $js = array();
+    private $menu = null;
     private $script = '';
     private $js_inline;
     private $version;
@@ -85,38 +86,50 @@ class Template
     // ativa / desativa texto do menu (padrão: $title)
     public $menu_title = true;
 
+    public function __construct($file = __FILE__)
+    {
+        // Menu Apps
+        $this->menu = dirname($file) . DS . ".." . DS . "siger.txt";
+    }
+
     // Define o nome do App
-    public function setApp($app){
+    public function setApp($app)
+    {
         $this->app = $app;
         return $this;
     }
 
     // Define a versão no final do arquivo
-    public function setVersion($v){
+    public function setVersion($v)
+    {
         $this->version = "?v={$v}";
         return $this;
     }
 
     // Define o título (string)
-    public function setTitle($title){
+    public function setTitle($title)
+    {
         $this->title = $title;
         return $this;
     }
 
     // Define o tema do App
-    public function setTheme($theme){
+    public function setTheme($theme)
+    {
         $this->theme = $theme;
         return $this;
     }
 
     // Adiciona uma tag script (inline) após o último script
-    public function setScript($js){
+    public function setScript($js)
+    {
         $this->js_inline .= "\r\n\t\t<script>\n{$this->_tab($js)}\t\t</script>";
         return $this;
     }
 
     // Adiciona uma tag link<stylesheet> ao head (string | array)
-    public function setCSS($css){
+    public function setCSS($css)
+    {
         if (gettype($css) === 'array')
             foreach($css as $c) $this->css[$c] = "\r\n\t\t<link rel=\"stylesheet\" href=\"{$c}{$this->version}\">";
         else
@@ -125,7 +138,8 @@ class Template
     }
 
     // Adiciona uma tag script ao final da página (string | array)
-    public function setJS($js){
+    public function setJS($js)
+    {
         if (gettype($js) === 'array')
             foreach($js as $s) $this->js[$s] = "\r\n\t\t<script src=\"{$s}{$this->version}\"></script>";
         else
@@ -134,7 +148,8 @@ class Template
     }
 
     // Adiciona um conteúdo (HTML) ao menu (à direita)
-    public function setMenu($html){
+    public function setMenu($html)
+    {
         $this->html_menu = $this->_tab("\n$html", 7) . $this->tab(6);
         return $this;
     }
@@ -165,25 +180,28 @@ class Template
      *          'Meu site' => '//meusite.com.br/'
      *      ], false);
      */
-    public function setMenuList($list, $sort = true){
+    public function setMenuList($list, $sort = true)
+    {
         $this->sort_menu_list = $sort;
         $this->menu_list = $list;
         return $this;
     }
 
     // Adiciona um conteúdo (HTML) no final do body
-    public function setBody($html){
+    public function setBody($html)
+    {
         $this->html_body = $this->_tab("\n$html", 2);
         return $this;
     }
 
     // Adiciona um conteúdo (HTML) ao footer (à direita)
-    public function setFooter($html){
+    public function setFooter($html)
+    {
         $this->html_footer = $this->_tab("\n$html", 4);
         return $this;
     }
 
-    private function _tab(string $str, $tab = 3):string
+    private function _tab($str, $tab = 3)
     {
         $string = '';
         foreach(preg_split("/((\r?\n)|(\r\n?))/", $str) as $line)
@@ -191,7 +209,7 @@ class Template
         return $string;
     }
 
-    private function tab($count):string
+    private function tab($count)
     {
         $spaces = '';
         for($i=0;$i < $count;$i++)
@@ -220,13 +238,11 @@ class Template
             $this->js_inline = "{$script}{$this->js_inline}";
         }
 
-        // Menu Apps
-        $default = dirname(__FILE__, 5) . DIRECTORY_SEPARATOR . "siger.txt";
         if (is_array($this->menu_list) and !empty($this->menu_list)) {
             $_menu = $this->menu_list;
         } else {
             $menu_list = substr($this->menu_list, 0, 1) === '/' ? $_SERVER['DOCUMENT_ROOT'] . $this->menu_list : $this->menu_list;
-            $_menu = file_exists($menu_list) ? $menu_list : (file_exists($default) ? $default : false);
+            $_menu = file_exists($menu_list) ? $menu_list : (file_exists($this->menu) ? $this->menu : false);
         }
         if ($_menu) {
             $menu = array();

@@ -8,7 +8,7 @@
 
 if (typeof window.URL !== 'function') {
     window.URL = function(url){
-        var param = {},search = "";
+        var param = {},search = "", url = (url || "").toString();
         if (!url || url.split("//").length !== 2)
             return console.error("Falha ao construir 'URL': 1 argumento necessário, mas apenas 0 presentes.");
         url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,k,v){param[k]=v.split("#")[0];search+=m})
@@ -36,13 +36,25 @@ if (typeof window.URL !== 'function') {
     }
 }
 
+if (!Array.prototype.includes) {
+    Object.defineProperty(Array.prototype, "includes", {
+        enumerable: false,
+        value: function(obj) {
+            var newArr = this.filter(function(el) {
+              return el == obj;
+            });
+            return newArr.length > 0;
+        }
+    });
+}
+
 var scripts = document.getElementsByTagName("script"),
 url = new URL("https://"+scripts[0].getAttribute("src")),
 app = url.searchParams.get("app");
 
-var includes = function() {
+/*var includesx = function() {
     return Array.prototype.indexOf.apply(this, arguments) !== -1;
-},
+},*/
 
 assign = function(){
     Object.defineProperty(Object, 'assign', {
@@ -308,6 +320,19 @@ __call = function() {
     });
 };
 
+
+if (!window.jQuery) {
+    window.$ = function(selector) {
+        if (typeof selector === 'object') return selector;
+        return document.querySelectorAll(selector)
+    }
+    $.fn = {}
+    $.isFunction = function(functionToCheck) {
+        return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+    }
+    window.jQuery = $;
+}
+
 if (!Object.assign) assign();
 
 var SIGER = SIGER || {};
@@ -339,6 +364,7 @@ SIGER = Object.assign({
                     $eval = 'sets'
                 for(k in keys) {
                     $eval += '["' + keys[k] + '"]'
+                    console.log($eval)
                     if (typeof eval($eval) === 'undefined')
                         eval($eval + ' = {}')
                 }
@@ -908,21 +934,11 @@ SIGER = Object.assign({
     }
 }, SIGER);
 
-document.onload = function(){alert('Nero')}
-
 window.onload = function() {
     SIGER.setTheme();
-    if (!window.jQuery) {
-        window.$ = function(selector) {
-            if (typeof selector === 'object') return selector;
-            return document.querySelectorAll(selector)
-        }
-        $.fn = {}
-        window.jQuery = $;
-    }
 
     __call({
-        includes:       'Array',
+        //includesx:       'Array',
         assign:         'Object',
         padStart:       'String',
         zeroPad:        'String,Number',

@@ -21,6 +21,26 @@
 
     }
 
+    .navbar-brand {color:#777}
+
+    #wrap > .container {
+        color: #333;
+        background: #fff;
+    }
+    #wrap > .container > h3 {color:#777}
+
+    .overlay {
+        background: rgba(255,255,255,0.7);
+        background: -ms-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
+        background: -moz-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
+        background: -o-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
+        background: -webkit-gradient(radial, center center, 0, center center, 497, color-stop(0, rgba(255,255,255,0.3)), color-stop(1, rgba(255,255,255,0.7)));
+        background: -webkit-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
+        background: radial-gradient(ellipse farthest-corner at center, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
+    }
+
+    .scrollbar {height: calc(100vh - 90px - 60px);}
+
     #footer {
         height: 60px;
         position: fixed;
@@ -30,5 +50,15 @@
         background: -webkit-linear-gradient(top, #f8f8f8 0%,#eaeaea 100%);
         background: linear-gradient(to bottom, #f8f8f8 0%,#eaeaea 100%);
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8f8f8', endColorstr='#eaeaea',GradientType=0 );
+    }
+
+    #footer > .container {
+        height: 60px;
+        line-height: calc(60px / 2);
+    }
+
+    #footer > .container > #pageload {
+        line-height: calc(60px + 1px);
+        color: #777;
     }
 }

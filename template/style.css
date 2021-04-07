@@ -108,7 +108,7 @@ a:hover {color: var(--link-hover);}
 }
 
 .navbar {
-    margin-bottom: 8px;
+    margin-bottom: 9px;
     position: relative;
     min-height: 50px;
     border: 1px solid transparent;
@@ -312,7 +312,7 @@ a:hover {color: var(--link-hover);}
 }
 
 *::-webkit-scrollbar-thumb:hover,
-    [data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
+[data-theme="dark"] *::-webkit-scrollbar-thumb:hover {
     background-color: rgb(117, 117, 117);
 }
 
