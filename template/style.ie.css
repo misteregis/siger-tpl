@@ -3,12 +3,12 @@
         background-color: #c6c6c6;
         color: var(#191919);
     }
-    
+
     body {
         color: #343a40;
         background-color: #eee;
     }
-    
+
     a {color: #005e81;}
     a:hover {color: #333;}
 
@@ -30,12 +30,6 @@
     #wrap > .container > h3 {color:#777}
 
     .overlay {
-        background: rgba(255,255,255,0.7);
-        background: -ms-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
-        background: -moz-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
-        background: -o-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
-        background: -webkit-gradient(radial, center center, 0, center center, 497, color-stop(0, rgba(255,255,255,0.3)), color-stop(1, rgba(255,255,255,0.7)));
-        background: -webkit-radial-gradient(center, ellipse farthest-corner, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
         background: radial-gradient(ellipse farthest-corner at center, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.7) 100%);
     }
 
@@ -60,5 +54,29 @@
     #footer > .container > #pageload {
         line-height: calc(60px + 1px);
         color: #777;
+    }
+
+    /* Dark Theme */
+    body[data-theme="dark"] {
+        color: #777777;
+        background-color: #16191d
+    }
+    [data-theme="dark"] a, [data-theme="dark"] table.info a {color: #0f779e;}
+    [data-theme="dark"] a:hover, [data-theme="dark"] table.info a:hover {color: #1283ad;}
+    [data-theme="dark"] .navbar-default {
+        background: #2c3038;
+        background: linear-gradient(to bottom, #2c3038 0%,#2d3139 100%);
+    }
+    [data-theme="dark"] .navbar-brand {color: #d6dae0;}
+    [data-theme="dark"] #wrap > .container {background: #2d3139;}
+    [data-theme="dark"] #wrap > .container > h3 {color:#707e93;}
+    [data-theme="dark"] .overlay {
+        background: #2d3139;
+        background: radial-gradient(ellipse farthest-corner at center, #2d3139 0%, #2c3038 100%);
+    }
+    [data-theme="dark"] #footer {
+        background: #2d3139;
+        background: linear-gradient(to bottom, #2d3139 0%,#2c3038 100%);
+        border-top: 1px solid #363636;
     }
 }

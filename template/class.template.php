@@ -27,10 +27,10 @@ class Template
         <!-- Template style -->
         <link rel=stylesheet href=\"{template_dir}style.css\">
         <link rel=stylesheet href=\"{template_dir}style.ie.css\">
-        <!--<link rel=stylesheet href=\"{template_dir}style-dark.css\">-->
     
         <!-- favicon -->
         <link rel=\"shortcut icon\" href=\"favicon.ico\">
+        {app_prefetch}
 		{app_css}";
     private $body = '
         <!-- Wrap all page content here -->
@@ -74,6 +74,7 @@ class Template
         <script src="{template_dir}script.js?app={app}"></script>
         <script src="{template_dir}../main.js"></script>';
 
+    private $prefetch = false;
     private $builded = false;
     private $css = array();
     private $js = array();
@@ -127,23 +128,36 @@ class Template
         return $this;
     }
 
-    // Adiciona uma tag link<stylesheet> ao head (string | array)
-    public function setCSS($css)
+    // Adiciona uma tag link<prefetch> ao head (string | array)
+    public function setPrefetch($prefetch, $version = true)
     {
-        if (gettype($css) === 'array')
-            foreach($css as $c) $this->css[$c] = "\r\n\t\t<link rel=\"stylesheet\" href=\"{$c}{$this->version}\">";
+        $v = $version ? $this->version : "";
+        if (gettype($prefetch) === 'array')
+            foreach($prefetch as $p) $this->prefetch[$p] = "\r\n\t\t<link rel=\"prefetch\" href=\"{$p}{$v}\">";
         else
-            $this->css[$css] = "\r\n\t\t<link rel=\"stylesheet\" href=\"{$css}{$this->version}\">";
+            $this->prefetch[$prefetch] = "\r\n\t\t<link rel=\"prefetch\" href=\"{$prefetch}{$v}\">";
+        return $this;
+    }
+
+    // Adiciona uma tag link<stylesheet> ao head (string | array)
+    public function setCSS($css, $version = true)
+    {
+        $v = $version ? $this->version : "";
+        if (gettype($css) === 'array')
+            foreach($css as $c) $this->css[$c] = "\r\n\t\t<link rel=\"stylesheet\" href=\"{$c}{$v}\">";
+        else
+            $this->css[$css] = "\r\n\t\t<link rel=\"stylesheet\" href=\"{$css}{$v}\">";
         return $this;
     }
 
     // Adiciona uma tag script ao final da página (string | array)
-    public function setJS($js)
+    public function setJS($js, $version = true)
     {
+        $v = $version ? $this->version : "";
         if (gettype($js) === 'array')
-            foreach($js as $s) $this->js[$s] = "\r\n\t\t<script src=\"{$s}{$this->version}\"></script>";
+            foreach($js as $s) $this->js[$s] = "\r\n\t\t<script src=\"{$s}{$v}\"></script>";
         else
-            $this->js[$js] = "\r\n\t\t<script src=\"{$js}{$this->version}\"></script>";
+            $this->js[$js] = "\r\n\t\t<script src=\"{$js}{$v}\"></script>";
         return $this;
     }
 
@@ -224,10 +238,17 @@ class Template
 
         ob_start();
 
+        // Prefetch
+        $prefetch = '';
+        if ($this->prefetch) {
+            $prefetch .= "\r\n\r\n\t\t<!-- App Prefetch -->";
+            foreach($this->prefetch as $p) $prefetch .= $p;
+        }
+
         // CSS Style
         $css = '';
         if ($this->css) {
-            $css .= "\r\n\r\n\t\t<!-- App style -->";
+            $css .= "\r\n\t\t<!-- App style -->";
             foreach($this->css as $c) $css .= $c;
         }
 
@@ -277,6 +298,7 @@ class Template
             $this->template_dir = '';
 
         $this->head = str_replace('{template_dir}', $this->template_dir, $this->head); // Diretório do template
+        $this->head = str_replace('{app_prefetch}', $prefetch, $this->head); // Adiciona os CSS's à página
         $this->head = str_replace('{app_css}', $css, $this->head); // Adiciona os CSS's à página
         $this->head = str_replace('{title}', $this->title, $this->head); // Adiciona título à página
         $this->body = str_replace('{title}', $menu_title, $this->body); // Altera o texto do botão de menu ($title)
