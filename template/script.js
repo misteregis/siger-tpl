@@ -9,15 +9,17 @@ document.addEventListener('DOMContentLoaded', function(event){
         firstLI = lis[0];
     firstLI.addEventListener('mouseenter', function(){sh('show')});
     ul.addEventListener('mouseleave', function(){sh('hide')});
-    home.innerText = document.title.split('-')[0].trim();
-    home.onclick = function(){window.location = './'};
-    gtt.addEventListener('click', function(){scb.scrollTop=0});
-    scb.addEventListener('scroll', function(){
-        if (this.scrollTop <= 46)
-            $(gtt).fadeOut();
-        else
-            $(gtt).fadeIn();
-    });
+    if ( home ) {
+        home.innerText = document.title.split('-')[0].trim();
+        home.onclick = function(){window.location = './'};
+        gtt.addEventListener('click', function(){scb.scrollTop=0});
+        scb.addEventListener('scroll', function(){
+            if (this.scrollTop <= 46)
+                $(gtt).fadeOut();
+            else
+                $(gtt).fadeIn();
+        });
+    }
 });
 
 function sh(display){
