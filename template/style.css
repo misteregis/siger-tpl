@@ -162,7 +162,7 @@ a:hover {color: var(--link-hover);}
 }
 
 .overlay {
-    z-index: 1034;
+    z-index: 1029;
     cursor: progress;
     background: var(--overlay-primary);
     background: -ms-radial-gradient(center, ellipse farthest-corner, var(--overlay-secondary) 0%, var(--overlay-primary) 100%);
