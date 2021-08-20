@@ -1,8 +1,8 @@
 <?php
 
-/*! Siger's Template Class - 2021-02-20
+/*! Siger's Template Class - 2021-08-19
  *
- * @version: 1.0.0
+ * @version: 1.0.1
  * 
  * https://siger.win
  * 
@@ -31,7 +31,8 @@ class Template
         <!-- favicon -->
         <link rel=\"shortcut icon\" href=\"favicon.ico\">
         {app_prefetch}
-		{app_css}";
+		{app_css}
+		{app_js_header}";
     private $body = '
         <!-- Wrap all page content here -->
         <div id="wrap">
@@ -82,6 +83,7 @@ class Template
     private $script = '';
     private $js_inline;
     private $version;
+    private $jshead;
     private $app;
 
     // ativa / desativa texto do menu (padrão: $title)
@@ -158,6 +160,21 @@ class Template
             foreach($js as $s) $this->js[$s] = "\r\n\t\t<script src=\"{$s}{$v}\"></script>";
         else
             $this->js[$js] = "\r\n\t\t<script src=\"{$js}{$v}\"></script>";
+        return $this;
+    }
+
+    // Adiciona uma tag script head (string | array)
+    public function setJSHeader($js, $file = true, $version = true)
+    {
+        $v = $version ? $this->version : "";
+        if ($file) {
+            if (gettype($js) === 'array')
+                foreach($js as $s) $this->jshead[$s] = "\r\n\t\t<script src=\"{$s}{$v}\"></script>";
+            else
+                $this->jshead[$js] = "\r\n\t\t<script src=\"{$js}{$v}\"></script>";
+        } else {
+            $this->jshead[$js] = "\r\n\t\t<script>{$js}</script>";
+        }
         return $this;
     }
 
@@ -252,6 +269,13 @@ class Template
             foreach($this->css as $c) $css .= $c;
         }
 
+        // JS Head Script
+        $jshead = '';
+        if ($this->jshead) {
+            $jshead .= "\r\n\t\t<!-- App script -->";
+            foreach($this->jshead as $c) $jshead .= $c;
+        }
+
         // js
         if ($this->js) {
             $script = "\r\n\r\n\t\t<!-- App script -->";
@@ -297,16 +321,17 @@ class Template
         if (strpos($_SERVER['REQUEST_URI'], $this->template_dir) !== false)
             $this->template_dir = '';
 
-        $this->head = str_replace('{template_dir}', $this->template_dir, $this->head); // Diretório do template
-        $this->head = str_replace('{app_prefetch}', $prefetch, $this->head); // Adiciona os CSS's à página
-        $this->head = str_replace('{app_css}', $css, $this->head); // Adiciona os CSS's à página
-        $this->head = str_replace('{title}', $this->title, $this->head); // Adiciona título à página
-        $this->body = str_replace('{title}', $menu_title, $this->body); // Altera o texto do botão de menu ($title)
-        $this->body = str_replace('{html_menu}', $this->html_menu, $this->body); // Adiciona código html ao menu à direita
-        $this->body = str_replace('{html_body}', $this->html_body, $this->body); // Adiciona código html no final de body
-        $this->footer = str_replace('{footer}', $this->html_footer, $this->footer); // Adiciona código html ao footer
-        $this->footer = str_replace('{template_dir}', $this->template_dir, $this->footer); // Diretório do template
-        $this->footer = str_replace('{app}', $this->app, $this->footer); // Define o nome do App
+        $this->head = str_replace('{app_js_header}', $jshead, $this->head);                 // Scripts no header
+        $this->head = str_replace('{template_dir}', $this->template_dir, $this->head);      // Diretório do template
+        $this->head = str_replace('{app_prefetch}', $prefetch, $this->head);                // Adiciona os CSS's à página
+        $this->head = str_replace('{app_css}', $css, $this->head);                          // Adiciona os CSS's à página
+        $this->head = str_replace('{title}', $this->title, $this->head);                    // Adiciona título à página
+        $this->body = str_replace('{title}', $menu_title, $this->body);                     // Altera o texto do botão de menu ($title)
+        $this->body = str_replace('{html_menu}', $this->html_menu, $this->body);            // Adiciona código html ao menu à direita
+        $this->body = str_replace('{html_body}', $this->html_body, $this->body);            // Adiciona código html no final de body
+        $this->footer = str_replace('{footer}', $this->html_footer, $this->footer);         // Adiciona código html ao footer
+        $this->footer = str_replace('{template_dir}', $this->template_dir, $this->footer);  // Diretório do template
+        $this->footer = str_replace('{app}', $this->app, $this->footer);                    // Define o nome do App
 
         echo "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n";
         echo "\t<head>\n\t\t{$this->head}";
