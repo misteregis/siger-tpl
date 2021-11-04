@@ -1,6 +1,6 @@
-/*! Siger's Template Class - 2021-02-21
+/*! Siger's Template Class - 2021-11-03
  *
- * @version: 1.0.2
+ * @version: 1.1.0
  * 
  * https://siger.win
  * 
@@ -51,10 +51,6 @@ if (!Array.prototype.includes) {
 var scripts = document.getElementsByTagName("script"),
 url = new URL("https://"+scripts[0].getAttribute("src")),
 app = url.searchParams.get("app");
-
-/*var includesx = function() {
-    return Array.prototype.indexOf.apply(this, arguments) !== -1;
-},*/
 
 assign = function(){
     Object.defineProperty(Object, 'assign', {
@@ -362,7 +358,7 @@ SIGER = Object.assign({
                     _siger = JSON.parse(localStorage.Siger),
                     keys = key.split('.'),
                     $eval = 'sets'
-                for(k in keys) {
+                for(var k in keys) {
                     $eval += '["' + keys[k] + '"]'
                     console.log($eval)
                     if (typeof eval($eval) === 'undefined')
@@ -410,7 +406,7 @@ SIGER = Object.assign({
                 var found = true,
                     $eval = 'sets[app]',
                     keys = key.split('.')
-                for(k in keys) {
+                for(var k in keys) {
                     $eval += '["' + keys[k] + '"]'
                     if (typeof eval($eval) === 'undefined') {
                         console.info('A chave ' + $eval.replace('sets[app]', '') + ' não foi encontrada.')
@@ -425,6 +421,13 @@ SIGER = Object.assign({
             console.info('A variável "app" não está definida')
         }
     },
+
+    /*
+     * SIGER.getAll(): Obtém todos os dados em localStorage na chave Siger[APP]
+     * você também pode obter dados em subchaves separando-as com ponto (.)
+     *
+     */
+    getAll: function() {return this.get()},
 
     /*
      * SIGER.del(key): Deleta um ou todos os dados em localStorage na chave Siger[APP]
@@ -445,7 +448,7 @@ SIGER = Object.assign({
                     keys = key.split('.'),
                     sets = this.get(),
                     $eval = 'sets'
-                for(k in keys) {
+                for(var k in keys) {
                     $eval += '["' + keys[k] + '"]'
                     if (typeof eval($eval) === 'undefined') {
                         console.info('A chave ' + $eval.replace('sets[app]', '') + ' não foi encontrada.')
@@ -826,12 +829,6 @@ SIGER = Object.assign({
      *    objABC = {author: "misteregis", mark: "Siger", year: "2020", by: "Siger", windows: 10, x: "x64"};
      *
      */
-    /*mixin: function(obj, merge) {
-        for (var key in merge) {
-            obj[key] = merge[key];
-        }
-        return obj;
-    }*/
     merge: function() {
         var obj = arguments[0] || null;
         if (arguments.length > 1)
@@ -867,7 +864,6 @@ SIGER = Object.assign({
         }
         if (!$theme && !_theme) {
             $theme = document.body.getAttribute('data-theme')
-            //SIGER.set('theme', document.body.getAttribute('data-theme'))
             SIGER.cookie('theme', $theme)
             SIGER.set('theme', $theme)
         } else {

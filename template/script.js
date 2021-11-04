@@ -23,8 +23,7 @@ document.addEventListener('DOMContentLoaded', function(event){
 });
 
 function sh(display){
-    var li = document.getElementsByTagName('ul')[0].children,
-        firstLI = li[0];
+    var li = document.getElementsByTagName('ul')[0].children;
     if (display === 'show')
         document.getElementsByTagName('ul')[0].classList.add('shadow');
     else
