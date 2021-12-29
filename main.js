@@ -1,6 +1,6 @@
-/*! Siger's Template Class - 2021-11-03
+/*! Siger's Template Class - 2021-12-28
  *
- * @version: 1.1.0
+ * @version: 1.1.1
  * 
  * https://siger.win
  * 
@@ -644,22 +644,21 @@ SIGER = Object.assign({
             second = d.getSeconds().zeroPad(2),
             weekday = d.getDay();
 
-        
+        var longmonth = d.toLocaleString('pt-BR', { month: 'long' }),
+            longweekday = d.toLocaleString('pt-BR', { weekday: 'long' }),
+            shortmonth = d.toLocaleString('pt-BR', { month: 'short' }).replace('.', ''),
+            shortweekday = d.toLocaleString('pt-BR', { weekday: 'short' }).replace('.', '');
 
-        var longmonth = d.toLocaleString('pt-BR', { month: 'long' });
-        var longweekday = d.toLocaleString('pt-BR', { weekday: 'long' });
-
-        if (month<10)
-            month='0'+month;
-
-        var obj = {timestamp: Math.floor(d.getTime()/1000), year: year, day: day, hour: hour, minute: minute, second: second};
+        var obj = { timestamp: Math.floor(d.getTime()/1000), year: year, day: day, hour: hour, minute: minute, second: second };
+        obj.weekday = { number: weekday, long: longweekday, short: shortweekday };
+        obj.month = { number: month, long: longmonth, short: shortmonth };
         obj.fulldate = year+month+day+hour+minute+second;
-        obj.weekday = {number: weekday, name: longweekday};
-        obj.month = {number: month, name: longmonth};
+        obj.ampm = d.getHours() >= 12 ? 'pm' : 'am',
+        obj.ampmupper = obj.ampm.toUpperCase(),
         obj.date = d;
 
         if (typeof key == 'string' && key2)
-            return this.dateObj(d, key2, key);
+            return SIGER.dateObj(d, key2, key);
 
         if (obj.hasOwnProperty(rKey))
             return obj[rKey];
@@ -674,11 +673,36 @@ SIGER = Object.assign({
     },
 
     /*
-     * SIGER.formatDate(): Formata data e hora apartir do timestamp
+     * SIGER.formatDate(): Formata data e hora apartir do timestamp.
      */
-    formatDate: function($timestamp, $extend, $toLower, $short){
-        var defaults = {timestamp:null,extend:false,toLower:false,short:false};
+    /**
+     * Formata data e hora apartir do timestamp
+     * @param {(
+     *      null|
+     *      Date|
+     *      Number|
+     *      String|
+     *      Object.<string,*>
+     * )} $timestamp                                            Pode ser um objeto JSON, Date, string ou número (timestamp).
+     * @param {String} $format                                  Formata a string (exemplo: dd/mm/YYYY)
+     * @param {Boolean} $extend                                 Extende ou não a string.
+     * @param {Boolean} $toLower                                Retorna tudo minúsculo (se verdadeiro).
+     * @param {Boolean} $short                                  Retorna uma string curta (se verdadeiro).
+     * @returns {String}
+     */
+    formatDate: function($timestamp, $format, $extend, $toLower, $short){
+        var defaults = {timestamp:null,format:null,extend:false,toLower:false,short:false};
         var s = {};
+
+        if (typeof $timestamp === 'number' || typeof $timestamp === 'string')
+            $timestamp = SIGER.dateObj($timestamp);
+
+        if ($timestamp instanceof Date)
+            $timestamp = Math.floor($timestamp.getTime()/1000);
+
+        if ($timestamp instanceof Object)
+            if ($timestamp.timestamp instanceof Date)
+                $timestamp.timestamp = Math.floor($timestamp.timestamp.getTime()/1000);
 
         if (typeof $timestamp === 'object')
             s = Object.assign(defaults, $timestamp);
@@ -687,23 +711,22 @@ SIGER = Object.assign({
                 timestamp: $timestamp,
                 toLower: $toLower,
                 extend: $extend,
+                format: $format,
                 short: $short
             });
 
-        if (!s.timestamp) return;
+        if (!s.timestamp) s.timestamp = Date.now();
 
         var $dd = SIGER.dateObj(s.timestamp, 'obj');
             $t = $dd.hour+':'+$dd.minute,
-            $w = $dd.weekday.name.split('-')[0],
-            $m = $dd.month.name,
+            $w = $dd.weekday.long.split('-')[0],
+            $m = $dd.month.long,
             $y = $dd.year,
             $d = $dd.day,
             $r = '';
 
-        var $month = ($y === SIGER.dateObj() && $m === SIGER.dateObj().month.name) ? '' : ' de ' + $m,
-            $year = $y === SIGER.dateObj().year ? '' : ' de ' + $y,
-            sdate = new Date(),
-            ydate = new Date();
+        var $month = ($y === SIGER.dateObj() && $m === SIGER.dateObj().month.long) ? '' : ' de ' + $m,
+            $year = $y === SIGER.dateObj().year ? '' : ' de ' + $y;
 
         var $sevendayTimestamp = SIGER.dateObj('sevenday', 'timestamp'),
             $yesterdayTimestamp = SIGER.dateObj('yesterday', 'timestamp'),
@@ -719,25 +742,57 @@ SIGER = Object.assign({
         var seconds = Math.round(($now.date - $dd.date) / 1000),
             minutes = Math.round(seconds / 60);
 
-        if (seconds < 5)
-            return 'agora'
-        else if (seconds < 60)
-            return '{0} segundos atrás'.format(seconds)
-        else if (seconds < 90)
-            return 'cerca de um minuto atrás'
-        else if (minutes < 60)
-            return '{0} minutos atrás'.format(minutes)
-        else if (minutes < 61)
-            return 'Uma hora atrás'.format(minutes)
+        if (s.format) {
+            const map = {
+                a: $dd.ampm,
+                d: $dd.day.zeroPad(2),
+                g: parseInt($dd.hour % 12),
+                h: ($dd.hour % 12).zeroPad(2),
+                i: $dd.minute,
+                j: $dd.month.number,
+                m: $dd.month.number.zeroPad(2),
+                n: $dd.month.number,
+                s: $dd.second,
+                A: $dd.ampmupper,
+                D: $dd.weekday.short,
+                F: $dd.month.long,
+                G: parseInt($dd.hour),
+                H: $dd.hour.zeroPad(2),
+                M: $dd.month.short,
+                y: $dd.year.toString().slice(-2),
+                Y: $dd.year
+            }
 
-        if (!s.extend && s.timestamp >= $todayTimestamp)
-            $r = 'Hoje às ' + $t;
-        else if (!s.extend && s.timestamp >= $yesterdayTimestamp)
-            $r = 'Ontem às ' + $t;
+            var regex = eval('/' + Object.keys(map).join('|') + '/gi');
+
+            return s.format.replace(regex, function(matched) {
+                return map[matched] ? map[matched] : matched
+            });
+        }
 
         if (s.short) {
-            $r = $d.zeroPad(2) + '/' + $dd.month.number + '/' + $y + ' ' + $t;
+            $r = $d.zeroPad(2) + '/' + $dd.month.number.zeroPad(2) + '/' + $y + ' ' + $t;
             
+            if (s.timestamp >= $todayTimestamp)
+                $r = 'Hoje às ' + $t;
+            else if (s.timestamp >= $yesterdayTimestamp)
+                $r = 'Ontem às ' + $t;
+
+            return s.toLower ? $r.toLowerCase() : $r.capitalize();
+        }
+
+        if (!s.extend) {
+            if (seconds < 5)
+                return 'agora'
+            else if (seconds < 60)
+                return '{0} segundos atrás'.format(seconds)
+            else if (seconds < 90)
+                return 'cerca de um minuto atrás'
+            else if (minutes < 60)
+                return '{0} minutos atrás'.format(minutes)
+            else if (minutes < 61)
+                return 'Uma hora atrás'.format(minutes)
+
             if (s.timestamp >= $todayTimestamp)
                 $r = 'Hoje às ' + $t;
             else if (s.timestamp >= $yesterdayTimestamp)
@@ -880,7 +935,7 @@ SIGER = Object.assign({
      *    SIGER.cookie('delete', 'tema'); // Irá excluir o cookie "tema", você também pode excluir usando SIGER.cookie(null, 'tema');
      *
      */
-    cookie: function(name, value, days){
+    cookie: function(name, value, days) {
         days = days ? days : 360
 
         var path = new URL(window.location).pathname,
@@ -934,7 +989,6 @@ window.onload = function() {
     SIGER.setTheme();
 
     __call({
-        //includesx:       'Array',
         assign:         'Object',
         padStart:       'String',
         zeroPad:        'String,Number',
