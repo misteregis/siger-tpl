@@ -1,6 +1,6 @@
 /*! Siger's Template Class - 2021-12-29
  *
- * @version: 1.2.0
+ * @version: 1.3.0
  * 
  * https://siger.win
  * 
@@ -995,6 +995,115 @@ SIGER = Object.assign({
         if (end < start) {count = start - end + 1;end = start}
         while (count--)  arr.push(end--)
         return arr;
+    },
+
+    /**
+     * Salva o conteúdo de uma tabela (thead, tbody) como CSV.
+     * 
+     * Você pode excluir colunas passando o índice e também pode passar um seletor.
+     * 
+     * - Exemplo: _SIGER.saveCsv(0, ".table", 2);_
+     * 
+     * O exemplo acima irá pegar os dados da tabela com a classe ".table", exceto da primeira e terceira coluna (0 e 2).
+     */
+    saveCsv: function() {
+        var file = 'data_' + SIGER.formatDate({format: 'YmdHi'}) + '.csv',
+            link = document.createElement('a'),
+            $element = 'table',
+            args = Array(),
+            header = '',
+            body = '';
+
+        $(arguments).each(function(i, v) {
+            if (typeof v === 'string')
+                $element = v;
+            else if (typeof v === 'object') {
+                if (v.hasOwnProperty('name'))
+                    file = v.name + '.csv';
+
+                if (v.hasOwnProperty('args')) {
+                    var _ = v.args, delimiter = '|;,',
+                        length = delimiter.length
+                        x = Array();
+
+                    for(var i = 0; i < length; i++)
+                        _ = _.replace(/\s/gi, '').split(delimiter[i]).join('.');
+
+                    _ = _.split('.');
+                    _.forEach(function(value, i) {
+                        var split = value.split('-');
+
+                        if (split.length === 2) {
+                            var from = parseInt(split[0]), to = parseInt(split[1]);
+                            x = x.concat(SIGER.range(from, to));
+                        }
+
+                        _[i] = parseInt(value);
+                    })
+
+                    _ = _.concat(x);
+                    _ = _.filter(function(v, i){return _.indexOf(v) === i});
+                    _.sort(function(a, b){return a - b});
+                    args = args.concat(_);
+                }
+            } else
+                args.push(v);
+        })
+
+        $($element).each(function(i, e) {
+            $('thead th', e).each(function(x, th) {
+                if (!args.length || args.filter(function(v) {return v == $(th).index()}).length)
+                    header += $(th).text() + ';';
+            })
+
+            if ($($element).length > 1) {
+                if ($('thead th', e).length) {
+                    if (header !== '')
+                        header = 'Tabela (nº ' + (i+1) + ')\n' + header;
+                } else {
+                    if (body !== '')
+                        body = body + '\nTabela (nº ' + (i+1) + ')\n';
+                }
+            }
+
+            $('tbody tr', e).each(function(x, tr) {
+                var line = ''
+
+                $('td', tr).each(function(x, td) {
+                    if (!args.length || args.filter(function(v) {return v == $(td).index()}).length)
+                        line += $(td).text().trim() + ';';
+                })
+
+                if (line !== '')
+                    body += line + '\n';
+            })
+        })
+
+        if (body === '') return alert('SIGER: Não há dados');
+
+        var data = header + '\n' + body;
+
+        if (header === '') data = body;
+
+        var blob = new Blob([
+            new Uint8Array([0xEF, 0xBB, 0xBF]),
+            data
+        ], {
+            type: 'text/csv;charset=utf-8',
+            encoding: 'utf-8'
+        });
+
+        link.download = file;
+
+        if (window.navigator.msSaveOrOpenBlob)
+            link.onclick = function(e){window.navigator.msSaveOrOpenBlob(blob, file);}
+        else
+            link.href = URL.createObjectURL(blob);
+
+        link.click();
+
+        if (!window.navigator.msSaveOrOpenBlob)
+            URL.revokeObjectURL(link.href);
     }
 }, SIGER);
 
