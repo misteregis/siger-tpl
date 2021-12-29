@@ -1,6 +1,6 @@
-/*! Siger's Template Class - 2021-12-28
+/*! Siger's Template Class - 2021-12-29
  *
- * @version: 1.1.1
+ * @version: 1.2.0
  * 
  * https://siger.win
  * 
@@ -982,6 +982,19 @@ SIGER = Object.assign({
             cookie.set()
 
         return cookie.get(name)
+    },
+
+    /**
+     * Formata data e hora apartir do timestamp
+     * @param {(String|Number)} $start                        O valor inicial do range.
+     * @param {(String|Number)} $end                          O valor final do range.
+     * @returns {Array}
+     */
+    range: function(start, end) {
+        var arr = [], count = end - start + 1;
+        if (end < start) {count = start - end + 1;end = start}
+        while (count--)  arr.push(end--)
+        return arr;
     }
 }, SIGER);
 
