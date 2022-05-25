@@ -75,12 +75,11 @@ class Template
         <script src="{template_dir}script.js?app={app}"></script>
         <script src="{template_dir}../main.js"></script>';
 
-    private $prefetch = false;
+    private $prefetch = array();
     private $builded = false;
     private $css = array();
     private $js = array();
     private $menu = null;
-    private $script = '';
     private $js_inline;
     private $version;
     private $jshead;
