@@ -1,6 +1,6 @@
 /*! Siger's Template Class - 2022-08-06
  *
- * @version: 1.3.0
+ * @version: 1.3.1
  *
  * https://siger.win
  *
@@ -45,11 +45,8 @@ if (typeof window.URL !== 'function') {
 if (!Array.prototype.includes) {
     Object.defineProperty(Array.prototype, "includes", {
         enumerable: false,
-        value: function(obj) {
-            var newArr = this.filter(function(el) {
-              return el == obj;
-            });
-            return newArr.length > 0;
+        value: function (obj) {
+            return this.filter(function (el) { return el == obj }).length > 0;
         }
     });
 }
@@ -255,7 +252,7 @@ var fadeOut = function () {
 };
 
 var html = function () {
-    if (this.length) { for (var i = 0; i < this.length; i++) this[i].html(arguments); return this }
+    if (this.length) { for (var i = 0; i < this.length; i++) { this[i].html(arguments); } return this }
     if (typeof arguments[0] === 'object') arguments[0] = arguments[0][0];
     if (!arguments[0]) return this.outerHTML;
 
@@ -263,7 +260,7 @@ var html = function () {
 };
 
 var text = function () {
-    if (this.length) { for (var i = 0; i < this.length; i++) this[i].text(arguments); return this }
+    if (this.length) { for (var i = 0; i < this.length; i++) { this[i].text(arguments); } return this }
     if (typeof arguments[0] === 'object') arguments[0] = arguments[0][0];
     if (!arguments[0]) return this.innerText;
 
@@ -335,7 +332,7 @@ var __call = function () {
     var f = arguments[0], ftype = arguments[1],
         _capitalize = { Nodelist: 'NodeList' };
 
-    ftype.split(',').forEach(function (t, i) {
+    ftype.split(',').forEach(function (t, _) {
         t = capitalize(t);
         t = _capitalize[t] || t;
 
@@ -580,7 +577,7 @@ SIGER = Object.assign({
      * @returns {Object} O objeto trocado.
      */
     array_flip: function ($array) {
-        return flipped = Object.keys($array)
+        return Object.keys($array)
             .filter($array.hasOwnProperty.bind($array))
             .reduce(function (obj, key) {
                 obj[$array[key].toLowerCase()] = key;
@@ -700,21 +697,41 @@ SIGER = Object.assign({
         var obj = { timestamp: Math.floor(d.getTime() / 1000), year: year, day: day, hour: hour, minute: minute, second: second };
         obj.weekday = { number: weekday, long: longweekday, short: shortweekday };
         obj.month = { number: month, long: longmonth, short: shortmonth };
-        obj.fulldate = year + month + day + hour + minute + second;
-        obj.ampm = d.getHours() >= 12 ? 'pm' : 'am',
-            obj.ampmupper = obj.ampm.toUpperCase(),
-            obj.date = d;
+        obj.fulldate = parseInt([year, month, day, hour, minute, second].map(function (n) {
+            var number = n.toString();
 
-        if (typeof key == 'string' && key2)
-            return SIGER.dateObj(d, key2, key);
+            if (number.length < 2)
+                number = number.padStart(2, '0');
 
-        if (obj.hasOwnProperty(rKey))
+            return number;
+        }).join(''));
+
+        obj.ampm = d.getHours() >= 12 ? 'pm' : 'am';
+        obj.ampmupper = obj.ampm.toUpperCase();
+        obj.date = d;
+
+        if (obj.hasOwnProperty(rKey)) {
+            if (obj[rKey].hasOwnProperty(key)) return obj[rKey][key];
+            if (obj[rKey].hasOwnProperty(key2)) return obj[rKey][key2];
+
             return obj[rKey];
+        }
 
-        if (obj.hasOwnProperty(key))
+        if (obj.hasOwnProperty(key2)) {
+            if (obj[key2].hasOwnProperty(key)) return obj[key2][key];
+            if (obj[key2].hasOwnProperty(rKey)) return obj[key2][rKey];
+
+            return obj[key2];
+        }
+
+        if (obj.hasOwnProperty(key)) {
+            if (obj[key].hasOwnProperty(key2)) return obj[key][key2];
+            if (obj[key].hasOwnProperty(rKey)) return obj[key][rKey];
+
             return obj[key];
+        }
 
-        if (key === 'obj' || rKey === 'obj')
+        if (key === 'obj' || key2 === 'obj' || rKey === 'obj')
             return obj;
 
         return d;
@@ -763,8 +780,8 @@ SIGER = Object.assign({
 
         if (!s.timestamp) s.timestamp = Date.now();
 
-        var $dd = SIGER.dateObj(s.timestamp, 'obj');
-        $t = $dd.hour + ':' + $dd.minute,
+        var $dd = SIGER.dateObj(s.timestamp, 'obj'),
+            $t = $dd.hour + ':' + $dd.minute,
             $w = $dd.weekday.long.split('-')[0],
             $m = $dd.month.long,
             $y = $dd.year,
@@ -1000,16 +1017,19 @@ SIGER = Object.assign({
              * SIGER.cookie('tema'); // Irá obter o valor do cookie "tema", você também pode obter valor usando SIGER.cookie('get', 'tema');
              * @returns {string} O valor do cookie.
              */
-            get: function(n){
-                if (n) name = n
-                var nameEQ = name + "="
-                var ca = document.cookie.split(';')
-                for (var i = 0; i < ca.length; i++) {
-                    var c = ca[i]
-                    while (c.charAt(0) == ' ') c = c.substring(1, c.length)
-                    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length)
+            get: function (n) {
+                if (n) name = n;
+
+                var nameEQ = name + "=",
+                    ca = document.cookie.split(';');
+
+                for (var item of ca) {
+                    while (item.charAt(0) == ' ') item = item.substring(1, item.length);
+
+                    if (item.indexOf(nameEQ) == 0) return item.substring(nameEQ.length, item.length);
                 }
-                return null
+
+                return null;
             },
             /**
              * Cria um cookie
@@ -1021,21 +1041,21 @@ SIGER = Object.assign({
              * SIGER.cookie('tema', 'light', '3'); // Irá criar um cookie com nome "tema", valor "light" e duração "3 dias"
              * @returns {void}
              */
-            set: function(n,d){
-                if (n) name = n
+            set: function (n, v, d, x) {
+                var expires = '';
+
+                if (v) value = v;
+                if (n) name = n;
 
                 if (days) {
-                    var date = new Date()
-                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000))
-                    var expires = "; expires=" + date.toGMTString()
-                } else {
-                    var expires = ''
+                    var date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toGMTString();
                 }
 
-                if (d)
-                    document.cookie = n + "=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/"
-                else
-                    document.cookie = name + "=" + value + expires + "; path=" + path
+                if (x) expires = '; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+
+                document.cookie = name + "=" + value + expires + "; path=" + path;
             },
             /**
              * Obtém um cookie
@@ -1044,8 +1064,8 @@ SIGER = Object.assign({
              * SIGER.cookie('delete', 'tema'); // Irá excluir o cookie "tema", você também pode excluir usando SIGER.cookie(null, 'tema');
              * @returns {void}
              */
-            delete: function(name){
-                cookie.set(name,1)
+            delete: function (name) {
+                cookie.set(name, null, null, true);
             }
         }
 
@@ -1072,10 +1092,33 @@ SIGER = Object.assign({
      * Se não for especificado, "step" terá valor igual a 1.
      * @returns {Array} Retorna um array com elementos iniciando com o valor "start" até o valor "end", inclusive.
      */
-    range: function(start, end) {
-        var arr = [], count = end - start + 1;
-        if (end < start) {count = start - end + 1;end = start}
-        while (count--)  arr.push(end--)
+    range: function (start, end, step = 1) {
+        var arr = [], count = end - start + 1,
+            reverse = false, isnan = isNaN(start) || isNaN(end);
+
+        if (isnan) {
+            start = start.charCodeAt();
+            end = end.charCodeAt();
+            count = end - start + 1
+        }
+
+        step = isNaN(step) ? 1 : parseInt(step);
+        start = parseInt(start);
+        end = parseInt(end);
+
+        if (end < start) {
+            count = start - end + 1;
+            end = start;
+            start = start - count + 1;
+            reverse = true;
+        }
+
+        for (var i = 0; i < count; i += step) {
+            var item = reverse ? end - i : start + i;
+
+            arr.push(isnan ? String.fromCharCode(item) : item);
+        }
+
         return arr;
     },
 
@@ -1099,30 +1142,35 @@ SIGER = Object.assign({
      * // das tabelas com a classe "table".
      */
     saveCsv: function () {
-        var file = 'data_' + SIGER.formatDate({format: 'YmdHi'}) + '.csv',
+        var file = 'data_' + SIGER.formatDate({ format: 'YmdHi' }) + '.csv',
             link = document.createElement('a'),
             $element = 'table',
             args = Array(),
             header = '',
             body = '';
 
-        $(arguments).each(function(i, v) {
+        $(arguments).each(function (_, v) {
             if (typeof v === 'string')
                 $element = v;
             else if (typeof v === 'object') {
                 if (v.hasOwnProperty('name'))
                     file = v.name + '.csv';
 
-                if (v.hasOwnProperty('args')) {
-                    var _ = v.args, delimiter = '|;,',
-                        length = delimiter.length
+                if (v.hasOwnProperty('table'))
+                    $element = v.table;
+
+                if (v.hasOwnProperty('columns'))
+                    args = v.columns;
+                else if (v.hasOwnProperty('args')) {
+                    var _args = v.args, delimiter = '|;,',
+                        length = delimiter.length,
                         x = Array();
 
-                    for(var i = 0; i < length; i++)
-                        _ = _.replace(/\s/gi, '').split(delimiter[i]).join('.');
+                    for (var i = 0; i < length; i++)
+                        _args = _args.replace(/\s/gi, '').split(delimiter[i]).join('.');
 
-                    _ = _.split('.');
-                    _.forEach(function(value, i) {
+                    _args = _args.split('.');
+                    _args.forEach(function (value, i) {
                         var split = value.split('-');
 
                         if (split.length === 2) {
@@ -1130,39 +1178,39 @@ SIGER = Object.assign({
                             x = x.concat(SIGER.range(from, to));
                         }
 
-                        _[i] = parseInt(value);
-                    })
+                        _args[i] = parseInt(value);
+                    });
 
-                    _ = _.concat(x);
-                    _ = _.filter(function(v, i){return _.indexOf(v) === i});
-                    _.sort(function(a, b){return a - b});
-                    args = args.concat(_);
+                    _args = _args.concat(x);
+                    _args = _args.filter(function (v, i) { return _args.indexOf(v) === i });
+                    _args.sort(function (a, b) { return a - b });
+                    args = args.concat(_args);
                 }
             } else
                 args.push(v);
         })
 
-        $($element).each(function(i, e) {
-            $('thead th', e).each(function(x, th) {
-                if (!args.length || args.filter(function(v) {return v == $(th).index()}).length)
+        $($element).each(function (i, e) {
+            $('thead th', e).each(function (_, th) {
+                if (!args.length || args.filter(function (v) { return v == $(th).index() }).length)
                     header += $(th).text() + ';';
             })
 
             if ($($element).length > 1) {
                 if ($('thead th', e).length) {
                     if (header !== '')
-                        header = 'Tabela (nº ' + (i+1) + ')\n' + header;
+                        header = 'Tabela (nº ' + (i + 1) + ')\n' + header;
                 } else {
                     if (body !== '')
-                        body = body + '\nTabela (nº ' + (i+1) + ')\n';
+                        body = body + '\nTabela (nº ' + (i + 1) + ')\n';
                 }
             }
 
-            $('tbody tr', e).each(function(x, tr) {
+            $('tbody tr', e).each(function (_, tr) {
                 var line = ''
 
-                $('td', tr).each(function(x, td) {
-                    if (!args.length || args.filter(function(v) {return v == $(td).index()}).length)
+                $('td', tr).each(function (_, td) {
+                    if (!args.length || args.filter(function (v) { return v == $(td).index() }).length)
                         line += $(td).text().trim() + ';';
                 })
 
@@ -1188,7 +1236,7 @@ SIGER = Object.assign({
         link.download = file;
 
         if (window.navigator.msSaveOrOpenBlob)
-            link.onclick = function(e){window.navigator.msSaveOrOpenBlob(blob, file);}
+            link.onclick = function (_) { window.navigator.msSaveOrOpenBlob(blob, file); }
         else
             link.href = URL.createObjectURL(blob);
 

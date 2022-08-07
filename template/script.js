@@ -1,6 +1,6 @@
 var $updating = false, start = new Date().getTime();
 
-document.addEventListener('DOMContentLoaded', function(event){
+document.addEventListener('DOMContentLoaded', function(_){
     var home = document.querySelector('#menu .navbar-brand'),
         gtt = document.querySelector('.icon-go-to-top'),
         scb = document.querySelector('.scrollbar'),

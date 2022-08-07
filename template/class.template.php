@@ -2,7 +2,7 @@
 
 /** Siger's Template Class
  *
- * @version: 1.0.1
+ * @version: 1.0.2
  * @since: 1.0
  * @author misteregis (https://siger.win)
  *
@@ -14,63 +14,63 @@ class Template
      *
      * @var string
      */
-    private $title = 'Siger\'s';
+    private string $title = 'Siger\'s';
 
     /**
      * Uma lista onde conterá os itens de menu a partir de uma lista (array) ou arquivo
      *
      * @var string|array
      */
-    private $menu_list;
+    private mixed $menu_list;
 
     /**
      * Conterá o código HTML que será adicionado ao menu (à direita)
      *
      * @var string
      */
-    private $html_menu = '';
+    private string $html_menu = '';
 
     /**
      * Conterá o código HTML que será adicionado ao final do body
      *
      * @var string
      */
-    private $html_body = '';
+    private string $html_body = '';
 
     /**
      * Conterá o código HTML que será adicionado ao footer (à direita)
      *
      * @var string
      */
-    private $html_footer = '';
+    private string $html_footer = '';
 
     /**
      * Diretório do template
      *
      * @var string
      */
-    private $template_dir = 'lib/siger/template/';
+    private string $template_dir = 'lib/siger/template/';
 
     /**
      * Verdadeiro para ordenar os itens do menu do menor > maior
      *
      * @var bool
      */
-    private $sort_menu_list = true;
+    private bool $sort_menu_list = true;
 
     /**
      * Tema do App (padrão dark)
      *
      * @var string
      */
-    private $theme = 'dark';
+    private string $theme = 'dark';
 
     /**
      * O cabeçalho (head)
      *
      * @var string
      */
-    private $head = "<meta charset=utf-8>
+    private string $head = "<meta charset=utf-8>
         <title>{title} - ® MS ® Siger</title>
         <meta name=\"description\" content=\"{title} by Misteregis\">
         <meta name=\"author\" content=\"Misteregis\">
@@ -90,7 +90,7 @@ class Template
      *
      * @var string
      */
-    private $body = '
+    private string $body = '
         <!-- Wrap all page content here -->
         <div id="wrap">
 
@@ -126,7 +126,7 @@ class Template
      *
      * @var string
      */
-    private $footer = '<div id="footer">
+    private string $footer = '<div id="footer">
             <div class="container">
                 <p class="text-muted credit">Desenvolvido por <a href="#" target="_blank">Misteregis</a>.</p>
                 <div id="pageload"></div>
@@ -144,48 +144,48 @@ class Template
      *
      * @var array
      */
-    private $prefetch = array();
+    private array $prefetch = array();
 
     /**
      * Verdadeiro se o App já estiver sido construído
      *
      * @var bool
      */
-    private $builded = false;
+    private bool $builded = false;
 
     /**
      * Lista (array) contendo os CSS's
      *
      * @var array
      */
-    private $css = array();
+    private array $css = array();
 
     /**
      * Lista (array) contendo os JS's
      *
      * @var array
      */
-    private $js = array();
+    private array $js = array();
 
     /**
      * Menu Apps
      *
      * @var string
      */
-    private $menu = '';
+    private string $menu = '';
 
     /**
      * Irá conter os códigos JS (script inline)
      *
      * @var string
      */
-    private $js_inline = '';
+    private string $js_inline = '';
     /**
      * Versão do App
      *
      * @var string
      */
-    private $version = '';
+    private string $version = '';
 
     /**
      * Conterá os código para a tag HEAD
@@ -205,7 +205,7 @@ class Template
      *
      * @var bool
      */
-    public $menu_title = true;
+    public bool $menu_title = true;
 
     public function __construct($file = __FILE__)
     {
@@ -218,7 +218,7 @@ class Template
      * @param  string $app O nome do App.
      * @return Template
      */
-    public function setApp($app)
+    public function setApp(string $app):Template
     {
         $this->app = $app;
 
@@ -231,7 +231,7 @@ class Template
      * @param  mixed $v A versão do arquivo.
      * @return Template
      */
-    public function setVersion($v)
+    public function setVersion(mixed $v):Template
     {
         $this->version = "?v={$v}";
 
@@ -244,7 +244,7 @@ class Template
      * @param  string $title O título do App.
      * @return Template
      */
-    public function setTitle($title)
+    public function setTitle(string $title):Template
     {
         $this->title = $title;
 
@@ -257,7 +257,7 @@ class Template
      * @param  string $theme O tema (dark / light).
      * @return Template
      */
-    public function setTheme($theme)
+    public function setTheme(string $theme):Template
     {
         $this->theme = $theme;
 
@@ -270,7 +270,7 @@ class Template
      * @param  string $js O código JS inline.
      * @return Template
      */
-    public function setScript($js)
+    public function setScript(string $js):Template
     {
         $this->js_inline .= "\r\n\t\t<script>\n{$this->_tab($js)}\t\t</script>";
 
@@ -284,7 +284,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setPrefetch($prefetch, $version = true)
+    public function setPrefetch(mixed $prefetch, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -303,7 +303,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setCSS($css, $version = true)
+    public function setCSS(mixed $css, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -322,7 +322,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setJS($js, $version = true)
+    public function setJS(mixed $js, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -344,7 +344,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setJSHeader($js, $file = true, $version = true)
+    public function setJSHeader(mixed $js, bool $file = true, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -365,7 +365,7 @@ class Template
      * @param  string $html O código HTML.
      * @return Template
      */
-    public function setMenu($html)
+    public function setMenu(string $html):Template
     {
         $this->html_menu = $this->_tab("\n$html", 7) . $this->tab(6);
 
@@ -398,7 +398,7 @@ class Template
      *          'Meu site' => '//meusite.com.br/'
      *      ], false);
      */
-    public function setMenuList($list, $sort = true)
+    public function setMenuList($list, $sort = true):Template
     {
         $this->sort_menu_list = $sort;
         $this->menu_list = $list;
@@ -412,7 +412,7 @@ class Template
      * @param  string $html O código HTML.
      * @return Template
      */
-    public function setBody($html)
+    public function setBody(string $html):Template
     {
         $this->html_body = $this->_tab("\n$html", 2);
 
@@ -425,14 +425,14 @@ class Template
      * @param  string $html O código HTML.
      * @return Template
      */
-    public function setFooter($html)
+    public function setFooter(string $html):Template
     {
         $this->html_footer = $this->_tab("\n$html", 4);
 
         return $this;
     }
 
-    private function _tab($str, $tab = 3)
+    private function _tab($str, $tab = 3):string
     {
         $string = '';
 
@@ -442,7 +442,7 @@ class Template
         return $string;
     }
 
-    private function tab($count)
+    private function tab($count):string
     {
         $spaces = '';
 
@@ -456,7 +456,7 @@ class Template
      *
      * @return void
      */
-    public function build()
+    public function build():void
     {
         if ($this->builded) return;
 
