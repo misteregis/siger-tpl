@@ -1,25 +1,31 @@
-/*! Siger's Template Class - 2021-12-29
+/*! Siger's Template Class - 2022-08-06
  *
  * @version: 1.3.0
- * 
+ *
  * https://siger.win
- * 
+ *
  */
 
 if (typeof window.URL !== 'function') {
-    window.URL = function(url){
-        var param = {},search = "", url = (url || "").toString();
+    window.URL = function (url) {
+        url = (url || "").toString();
+
+        var param = {}, search = "";
+
         if (!url || url.split("//").length !== 2)
             return console.error("Falha ao construir 'URL': 1 argumento necessário, mas apenas 0 presentes.");
-        url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,k,v){param[k]=v.split("#")[0];search+=m})
-        var _url = url.split("//");
-        var _u = _url[1],
+
+        url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, k, v) { param[k] = v.split("#")[0]; search += m });
+
+        var _url = url.split("//"),
+            _u = _url[1],
             _hash = _u.split("#"),
             hash = _hash[1] ? "#" + _hash[1] : "",
             host = _url[1].split("/")[0],
-            hostname = host.split(":")[0]
+            hostname = host.split(":")[0],
             port = host.split(":")[1] ? host.split(":")[1] : "",
-            pathname = _url[1].replace(host, "").replace(search, "").replace(hash, ""),
+            pathname = _url[1].replace(host, "").replace(search, "").replace(hash, "");
+
         this.hash = hash;
         this.host = host;
         this.hostname = hostname;
@@ -30,8 +36,8 @@ if (typeof window.URL !== 'function') {
         this.protocol = _url[0];
         this.search = search.split("#")[0];
         this.searchParams = {
-            get: function(key){return param[key] || null},
-            getAll: function(){return param || null}
+            get: function (key) { return param[key] || null },
+            getAll: function () { return param || null }
         };
     }
 }
@@ -49,105 +55,115 @@ if (!Array.prototype.includes) {
 }
 
 var scripts = document.getElementsByTagName("script"),
-url = new URL("https://"+scripts[0].getAttribute("src")),
-app = url.searchParams.get("app");
+    url = new URL("https://" + scripts[0].getAttribute("src")),
+    app = url.searchParams.get("app");
 
-assign = function(){
+var assign = function () {
     Object.defineProperty(Object, 'assign', {
         enumerable: false,
         configurable: true,
         writable: true,
-        value: function(target) {
+        value: function (target) {
             'use strict';
+
             if (target === undefined || target === null)
                 throw new TypeError('Cannot convert first argument to object');
+
             var to = Object(target);
+
             for (var i = 1; i < arguments.length; i++) {
                 var nextSource = arguments[i];
+
                 if (nextSource === undefined || nextSource === null)
                     continue;
+
                 nextSource = Object(nextSource);
+
                 var keysArray = Object.keys(Object(nextSource));
+
                 for (var nextIndex = 0, len = keysArray.length; nextIndex < len; nextIndex++) {
                     var nextKey = keysArray[nextIndex];
                     var desc = Object.getOwnPropertyDescriptor(nextSource, nextKey);
-                    if (desc !== undefined && desc.enumerable) {
-                            to[nextKey] = nextSource[nextKey];
-                    }
+
+                    if (desc !== undefined && desc.enumerable)
+                        to[nextKey] = nextSource[nextKey];
                 }
             }
+
             return to;
         }
     });
-},
+};
 
-padStart = function(targetLength, padString) {
+var padStart = function (targetLength, padString) {
     targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
     padString = String(typeof padString !== 'undefined' ? padString : ' ');
-    if (this.length > targetLength) {
+
+    if (this.length > targetLength)
         return String(this);
-    } else {
+    else {
         targetLength = targetLength - this.length;
+
         if (targetLength > padString.length)
             padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+
         return padString.slice(0, targetLength) + String(this);
     }
-},
+};
 
-zeroPad = function() {
+var zeroPad = function () {
     var length = arguments[0] || 4, add = arguments[1] || "0";
-    return this.toString().padStart(length||4, add||"0");
-},
 
-/*
+    return this.toString().padStart(length || 4, add || "0");
+};
+
+/**
  * String.capitalize(): Primeira letra maiúscula
- *
- *  Exemplo:
- *    'misteregis'.capitalize();
- *    'SIGER'.capitalize();
- *
- * Resultado:
- *    'Misteregis'
- *    'Siger'
- *
+ * @param {string} str A string a ser capitalizada.
+ * @example
+ * 'misteregis'.capitalize(); // 'Misteregis'
+ * 'SIGER'.capitalize(); // 'Siger'
+ * @return {string} A string capitalizada.
  */
-capitalize = function(str) {
+var capitalize = function (str) {
     str = (str || this).toLowerCase().trim();
+
     return str.charAt(0).toUpperCase() + str.slice(1);
-},
+};
 
-/*
+/**
  * String.format(): Formatar texto
+ * @example
+ * 'Meu nome é {0}, eu moro em {1}, trabalho na {2}.'.format('Reginaldo', 'Niterói', 'SMF');
  *
- *  Exemplo:
- *    'Meu nome é {0}, eu moro em {1}, trabalho na {2}.'.format('Reginaldo', 'Niterói', 'SMF');
- *
- * Resultado:
- *    'Meu nome é Reginaldo, eu moro em Niterói, trabalho na SMF.'
- *
+ * // Resultado:
+ * 'Meu nome é Reginaldo, eu moro em Niterói, trabalho na SMF.'
+ * @return {string} A string formatada.
  */
-format = function() {
+var format = function () {
     var args = [];
-    for(k in arguments) args.push(arguments[k]);
-    return this.replace(/{(\d+)}/g, function(match, number) {
-        return typeof args[number] != 'undefined'
-            ? args[number]
-            : match
-        ;
-    });
-},
 
-fadeIn = function(){
+    for (var k in arguments) args.push(arguments[k]);
+
+    return this.replace(/{(\d+)}/g, function (match, number) {
+        return typeof args[number] != 'undefined' ? args[number] : match ;
+    });
+};
+
+var fadeIn = function () {
     if (this.length) {
         for (var i = 0; i < this.length; i++)
             this[i].fadeIn(arguments);
+
         return this;
     }
 
     if (typeof arguments[0] === 'object') {
-        args = [];
-        for(k in arguments[0])
+        var args = [];
+
+        for (var k in arguments[0])
             args[k] = arguments[0][k];
+
         arguments = args;
     }
 
@@ -161,6 +177,7 @@ fadeIn = function(){
         $style.opacity = 1;
         $style.display = 'inline-block';
         $style.visibility = 'visible';
+
         return this;
     }
 
@@ -169,33 +186,37 @@ fadeIn = function(){
     this.style.display = "inline-block";
     this.style.visibility = "visible";
 
-    var $this = this,
-        opacity = 0,
-        timer = setInterval(function() {
-        opacity += 50 / (secs*1000);
-        if( opacity >= 1 ) {
+    var $this = this, opacity = 0;
+    var timer = setInterval(function () {
+        opacity += 50 / (secs * 1000);
+
+        if (opacity >= 1) {
             clearInterval(timer);
             opacity = 1;
 
             if (func) func($this);
         }
+
         $this.style.opacity = opacity;
         $this.style.filter = "alpha(opacity=" + opacity * 100 + ")";
-    }, 50 );
-    return $this;
-},
+    }, 50);
 
-fadeOut = function(){
+    return $this;
+};
+
+var fadeOut = function () {
     if (this.length) {
         for (var i = 0; i < this.length; i++)
             this[i].fadeOut(arguments);
+
         return this;
     }
 
     if (typeof arguments[0] === 'object') {
-        args = [];
-        for(k in arguments[0])
+        var args = [];
+        for (var k in arguments[0])
             args[k] = arguments[0][k];
+
         arguments = args;
     }
 
@@ -209,14 +230,15 @@ fadeOut = function(){
         $style.opacity = 0;
         $style.display = 'none';
         $style.visibility = 'hidden';
+
         return this;
     }
 
-    var $this = this,
-        opacity = 1,
-        timer = setInterval( function() {
-        opacity -= 50 / (secs*1000);
-        if( opacity <= 0 ) {
+    var $this = this, opacity = 1;
+    var timer = setInterval(function () {
+        opacity -= 50 / (secs * 1000);
+
+        if (opacity <= 0) {
             clearInterval(timer);
             opacity = 0;
             $this.style.display = "none";
@@ -224,90 +246,99 @@ fadeOut = function(){
 
             if (func) func($this);
         }
+
         $this.style.opacity = opacity;
         $this.style.filter = "alpha(opacity=" + opacity * 100 + ")";
-    }, 50 );
-    return $this;
-},
+    }, 50);
 
-html = function() {
-    if (this.length) {for (var i = 0; i < this.length; i++) this[i].html(arguments);return this}
+    return $this;
+};
+
+var html = function () {
+    if (this.length) { for (var i = 0; i < this.length; i++) this[i].html(arguments); return this }
     if (typeof arguments[0] === 'object') arguments[0] = arguments[0][0];
     if (!arguments[0]) return this.outerHTML;
-    return this.innerHTML = typeof arguments[0] === 'object' ? arguments[0].outerHTML : arguments[0];
-},
 
-text = function() {
-    if (this.length) {for (var i = 0; i < this.length; i++) this[i].text(arguments);return this}
+    return this.innerHTML = typeof arguments[0] === 'object' ? arguments[0].outerHTML : arguments[0];
+};
+
+var text = function () {
+    if (this.length) { for (var i = 0; i < this.length; i++) this[i].text(arguments); return this }
     if (typeof arguments[0] === 'object') arguments[0] = arguments[0][0];
     if (!arguments[0]) return this.innerText;
+
     return this.innerText = typeof arguments[0] === 'object' ? arguments[0].innerText : arguments[0];
-},
+};
 
-show = function() {return this.fadeIn(0)},
-hide = function() {return this.fadeOut(0)},
+var show = function () { return this.fadeIn(0) };
+var hide = function () { return this.fadeOut(0) };
 
-append = function() {
+var append = function () {
     if (this.length) return this._each(arguments);
     var $div = document.createElement('div');
     $div.innerHTML = arguments[0].trim();
-    return this.appendChild($div.firstChild);
-},
 
-setScaledFont = function() {
+    return this.appendChild($div.firstChild);
+};
+
+var setScaledFont = function () {
     if (this.length) return this._each(arguments);
     var f = arguments[0],
         s = this.offsetWidth,
-        fs = s * (f?f:.35);
-    return this.style.fontSize = fs + '%';
-},
+        fs = s * (f ? f : .35);
 
-_each = function(){
+    return this.style.fontSize = fs + '%';
+};
+
+var _each = function () {
     for (var i = 0; i < this.length; i++)
         this[i][arguments[0].callee.name](arguments[0][0]);
-    return this
-},
 
- /* [case insensitive]
-  * __call(FNAME, FTYPE): Cria uma função prototype com nome e tipo da função
-  * - FNAME: Nome da função
-  * - FTYPE: Tipo da função (pode ser vários separados por vírgula)
-  * 
-  * 
-  *  Exemplo:
-  *    __call('setScaledFont', 'NodeList,Element');
-  *    - O exemplo acima irá criar dois prototype para a função 'setScaledFont'
-  *    - Um do tipo 'NodeList' e outro do tipo 'Element':
-  *    -- NodeList.prototype.setScaledFont = setScaledFont;
-  *    -- Element.prototype.setScaledFont = setScaledFont;
-  *
-  * --------------------------------------------------------------------------
-  * __call(Object): Cria uma ou mais funções prototype a partir de um objeto
-  *  Exemplo:
-  *    __call({
-  *      setScaledFont: 'NodeList,Element',
-  *      capitalize: 'String'
-  *    });
-  *    - O exemplo acima irá criar dois prototype para a função 'setScaledFont' eum prototype para a função 'capitalize'
-  *    - [setScaledFont] um prototype do tipo 'NodeList' e outro do tipo 'Element':
-  *    -- NodeList.prototype.setScaledFont = setScaledFont;
-  *    -- Element.prototype.setScaledFont = setScaledFont;
-  * 
-  *    - [capitalize] um prototype do tipo 'String':
-  *    -- String.prototype.capitalize = capitalize;
-  *
-  */
-__call = function() {
+    return this;
+};
+
+/**
+ * [case insensitive]
+ * __call(FNAME, FTYPE): Cria uma função prototype com nome e tipo da função
+ * - FNAME: Nome da função
+ * - FTYPE: Tipo da função (pode ser vários separados por vírgula)
+ *
+ *
+ * @example
+ * __call('setScaledFont', 'NodeList,Element');
+ * // O exemplo acima irá criar dois prototype para a função 'setScaledFont'
+ * // Um do tipo 'NodeList' e outro do tipo 'Element':
+ * NodeList.prototype.setScaledFont = setScaledFont;
+ * Element.prototype.setScaledFont = setScaledFont;
+ *
+ * //--------------------------------------------------------------------------//
+ * // __call(Object): Cria uma ou mais funções prototype a partir de um objeto
+ * // Exemplo:
+ * __call({
+ *   setScaledFont: 'NodeList,Element',
+ *   capitalize: 'String'
+ * });
+ * // O exemplo acima irá criar dois prototype para a função 'setScaledFont' e um prototype para a função 'capitalize'
+ * // [setScaledFont] um prototype do tipo 'NodeList' e outro do tipo 'Element':
+ * NodeList.prototype.setScaledFont = setScaledFont;
+ * Element.prototype.setScaledFont = setScaledFont;
+ * //
+ * // [capitalize] um prototype do tipo 'String':
+ * String.prototype.capitalize = capitalize;
+ */
+var __call = function () {
     if (typeof arguments[0] === 'object') {
-        for(k in arguments[0])
+        for (var k in arguments[0])
             __call(k, arguments[0][k]);
         return;
     }
     var f = arguments[0], ftype = arguments[1],
-        _capitalize = {Nodelist: 'NodeList'};
-    ftype.split(',').forEach(function(t, i){
+        _capitalize = { Nodelist: 'NodeList' };
+
+    ftype.split(',').forEach(function (t, i) {
         t = capitalize(t);
         t = _capitalize[t] || t;
+
         if (t === 'Object') {
             if (!$.fn[f]) $.fn[f] = eval(f);
         } else {
@@ -318,14 +349,17 @@ __call = function() {
 
 
 if (!window.jQuery) {
-    window.$ = function(selector) {
+    window.$ = function (selector) {
         if (typeof selector === 'object') return selector;
+
         return document.querySelectorAll(selector)
     }
+
     $.fn = {}
-    $.isFunction = function(functionToCheck) {
+    $.isFunction = function (functionToCheck) {
         return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
     }
+
     window.jQuery = $;
 }
 
@@ -335,233 +369,254 @@ var SIGER = SIGER || {};
 
 SIGER = Object.assign({
 
-    /*
-     * SIGER.set(key, value): Salva dados no localStorage na chave Siger[APP]
+    /**
+     * SIGER.set(key, value): Salva dados no localStorage na chave Siger[app]
      * você também pode salvar dados com subchaves separando-os com ponto (.)
      *
-     *  Exemplo:
-     *    var app = 'meu_app';
-     *    SIGER.set('teste', 'Meu teste');
-     *    SIGER.set('config', {theme:'dark'});
-     *    SIGER.set('config.site.title', 'Meu Site');
+     * @param {string} key Chave a ser salva.
+     * @param {*} value Valor a ser salva.
+     * @example
+     * var appKey = 'meu_app';
+     * SIGER.set('teste', 'Meu teste');
+     * SIGER.set('config', {theme:'dark'});
+     * SIGER.set('config.site.title', 'Meu Site');
      *
-     * Resultado:
-     *    localStorage.Siger = { "meu_app": { "teste": "Meu teste" } }
-     *    localStorage.Siger = { "meu_app": { "config": { "theme": "dark" } } }
-     *    localStorage.Siger = { "meu_app": { "config": { "site": {"title":"Meu Site"} } } }
-     *
+     * // Resultado:
+     * // { "teste": "Meu teste" }
+     * // { "config": { "theme": "dark" } }
+     * // { "config": { "site": {"title":"Meu Site"} } }
+     * @returns {Object} A configuração.
      */
-    set: function(key, value){
+    set: function (key, value) {
         if (typeof app === 'string') {
             if (key && value) {
                 var sets = this.get(),
                     _siger = JSON.parse(localStorage.Siger),
                     keys = key.split('.'),
-                    $eval = 'sets'
-                for(var k in keys) {
-                    $eval += '["' + keys[k] + '"]'
-                    console.log($eval)
+                    $eval = 'sets';
+
+                for (var k in keys) {
+                    $eval += '["' + keys[k] + '"]';
+
                     if (typeof eval($eval) === 'undefined')
                         eval($eval + ' = {}')
                 }
                 if (typeof value === 'object')
-                    $eval += ' = ' + JSON.stringify(value)
+                    $eval += ' = ' + JSON.stringify(value);
                 else
-                    $eval += ' = "' + value + '"'
-                eval($eval)
+                    $eval += ' = "' + value + '"';
+
+                eval($eval);
                 _siger[app] = sets
-                localStorage.Siger = JSON.stringify(_siger)
-                return sets
+                localStorage.Siger = JSON.stringify(_siger);
+
+                return sets;
             }
         } else {
-            console.info('A variável "app" não está definida')
+            console.info('A variável "app" não está definida');
         }
     },
 
-    /*
-     * SIGER.get(key): Obtém um ou todos os dados em localStorage na chave Siger[APP]
+    /**
+     * SIGER.get(key): Obtém um ou todos os dados em localStorage na chave Siger[app]
      * você também pode obter dados em subchaves separando-as com ponto (.)
      *
-     *  Exemplo:
-     *    var app = 'meu_app';
-     *    var all = SIGER.get(); // (object) {"meu_app":{"teste":"Meu teste","config":{"theme":"dark"}}}
-     *    var teste = SIGER.get('teste'); // (string) "Meu teste"
-     *    var config = SIGER.get('config'); // (object) {"theme":"dark"}
-     *    var theme = SIGER.get('config.theme') // (string) "dark"
-     *
-     * Resultado:
-     *    theme = 'dark';
-     *
+     * @param {string} key Chave a ser obtida.
+     * @example
+     * var appKey = 'meu_app';
+     * var all    = SIGER.get(); // (object) { "teste": "Meu teste", "config" : { "theme": "dark" } }
+     * var teste  = SIGER.get('teste'); // (string) "Meu teste"
+     * var config = SIGER.get('config'); // (object) {"theme":"dark"}
+     * var theme  = SIGER.get('config.theme') // (string) "dark"
+     * @returns {*} A configuração.
      */
-    get: function(key, _default){
+    get: function (key, _default) {
         if (typeof app === 'string') {
             if (!localStorage.Siger)
-                localStorage.Siger = JSON.stringify({})
+                localStorage.Siger = JSON.stringify({});
+
             var sets = JSON.parse(localStorage.Siger);
+
             if (!sets[app]) {
-                sets[app] = _default || {}
-                localStorage.Siger = JSON.stringify(sets)
+                sets[app] = _default || {};
+                localStorage.Siger = JSON.stringify(sets);
             }
+
             if (key) {
                 var found = true,
                     $eval = 'sets[app]',
-                    keys = key.split('.')
-                for(var k in keys) {
-                    $eval += '["' + keys[k] + '"]'
+                    keys = key.split('.');
+
+                for (var k in keys) {
+                    $eval += '["' + keys[k] + '"]';
                     if (typeof eval($eval) === 'undefined') {
-                        console.info('A chave ' + $eval.replace('sets[app]', '') + ' não foi encontrada.')
-                        found = false
+                        console.info('A chave ' + $eval.replace('sets[app]', '') + ' não foi encontrada.');
+                        found = false;
                         break;
                     }
                 }
-                return found ? eval($eval) : null
+
+                return found ? eval($eval) : null;
             }
-            return sets[app]
+
+            return sets[app];
         } else {
-            console.info('A variável "app" não está definida')
+            console.info('A variável "app" não está definida');
         }
     },
 
-    /*
-     * SIGER.getAll(): Obtém todos os dados em localStorage na chave Siger[APP]
+    /**
+     * SIGER.getAll(): Obtém todos os dados em localStorage na chave Siger[app]
      * você também pode obter dados em subchaves separando-as com ponto (.)
      *
+     * @returns {Object} A configuração.
      */
-    getAll: function() {return this.get()},
+    getAll: function () { return this.get() },
 
-    /*
-     * SIGER.del(key): Deleta um ou todos os dados em localStorage na chave Siger[APP]
+    /**
+     * SIGER.del(key): Deleta um ou todos os dados em localStorage na chave Siger[app]
      * você também pode excluir dados em subchaves separando-as com ponto (.)
      *
-     *  Exemplo:
-     *    var app = 'meu_app';
-     *    var all = SIGER.get(); // (object) {"meu_app":{"teste":"Meu teste","config":{"theme":"dark"}}}
-     *    var teste = SIGER.get('teste'); // (string) "Meu teste"
-     *    var config = SIGER.get('config'); // (object) {"theme":"dark"}
-     *    var theme = SIGER.get('config.theme') // (string) "dark"
-     *
+     * @param {string} key Chave a ser removida.
+     * @example
+     * SIGER.del('teste');
+     * SIGER.del('config');
+     * SIGER.del('config.theme');
+     * @returns {void} Nada.
      */
-    del: function(key){
+    del: function (key) {
         if (typeof app === 'string') {
             if (key) {
                 var _siger = JSON.parse(localStorage.Siger),
                     keys = key.split('.'),
                     sets = this.get(),
-                    $eval = 'sets'
-                for(var k in keys) {
-                    $eval += '["' + keys[k] + '"]'
+                    $eval = 'sets';
+
+                for (var k in keys) {
+                    $eval += '["' + keys[k] + '"]';
+
                     if (typeof eval($eval) === 'undefined') {
-                        console.info('A chave ' + $eval.replace('sets[app]', '') + ' não foi encontrada.')
+                        console.info('A chave ' + $eval.replace('sets[app]', '') + ' não foi encontrada.');
                         break;
                     }
                 }
-                eval('delete ' + $eval)
-                _siger[app] = sets
-                localStorage.Siger = JSON.stringify(_siger)
+                eval('delete ' + $eval);
+                _siger[app] = sets;
+                localStorage.Siger = JSON.stringify(_siger);
             } else {
-                console.info('Nenhuma chave definida')
+                console.info('Nenhuma chave definida');
             }
         } else {
-            console.info('A variável "app" não está definida')
+            console.info('A variável "app" não está definida');
         }
     },
 
-    /*
+    /**
      * SIGER.focusTextToEnd(element): Foca o elemento e coloca o marcador no fim
+     * @param {Element} element O elemento.
+     * @returns {void} Nada.
      */
-    focusTextToEnd: function(element){
+    focusTextToEnd: function (element) {
         var v = element.value;
         element.focus();
         element.value = '';
         element.value = v;
     },
 
-    /*
+    /**
      * SIGER.editInLine(element, callback): Edita um elemento em linha e executa o callback (caso exista)
      * O callback irá retornar três parâmetros callback(elemento, valor_antigo, novo_valor)
+     * @param {Element} element O elemento.
+     * @param {function(Element,string,string):void} callback A função de retorno.
+     * @returns {void} Nada.
      */
-    editInLine: function(element, callback){
-        if (!element.querySelector('input')){
-            var t = element.textContent,o = t,
+    editInLine: function (element, callback) {
+        if (!element.querySelector('input')) {
+            var t = element.textContent, o = t,
                 $input = document.createElement('input');
+
             $input.setAttribute('class', 'editInLine');
             $input.setAttribute('value', t);
             element.innerHTML = '';
             element.appendChild($input);
-            setTimeout(function(){SIGER.focusTextToEnd($input)},100);
-            $input.addEventListener('keyup', function(event){
+
+            setTimeout(function () { SIGER.focusTextToEnd($input) }, 100);
+
+            $input.addEventListener('keyup', function (event) {
                 var keycode = event.keyCode || event.which;
 
                 var v = this.value.trim();
                 if (keycode === 13) {
-                    if (callback && t !== v){
-                        t = v;element.textContent = v;
+                    if (callback && t !== v) {
+                        t = v; element.textContent = v;
                         callback(element, o, v);
                     } else {
                         element.textContent = v;
                     }
                 }
             });
-            $input.addEventListener('blur', function(event){
+
+            $input.addEventListener('blur', function (_) {
                 this.disabled = true;
                 var v = this.value.trim();
+
                 element.textContent = v;
+
                 if (callback && t !== v)
                     callback(element, o, v);
             });
         }
     },
 
-    /*
+    /**
      * SIGER.array_flip(): Troca a chave por valor de um Object ou Array
+     * @param {(Object|Array)} $array O objeto a ser trocado.
+     * @example
+     * var obj = { "author": "misteregis", "mark": "Siger" };
+     * var obj_flip = SIGER.array_flip(obj);
      *
-     *  Exemplo:
-     *    var obj = {author:'misteregis',mark:'Siger'};
-     *    var obj_flip = SIGER.array_flip(obj);
-     *
-     * Resultado:
-     *    obj_flip = {"misteregis x": "author", siger: "mark"}
-     *
+     * // Resultado:
+     * obj_flip = { "misteregis": "author", "siger": "mark" }
+     * @returns {Object} O objeto trocado.
      */
-    array_flip: function($array){
+    array_flip: function ($array) {
         return flipped = Object.keys($array)
             .filter($array.hasOwnProperty.bind($array))
-            .reduce(function(obj, key) {
+            .reduce(function (obj, key) {
                 obj[$array[key].toLowerCase()] = key;
+
                 return obj;
             }, {});
     },
 
-    /*
+    /**
      * SIGER.in_array(): Verifica se uma chave existe num array
-     *
-     *  Exemplo:
-     *    var arr = ['account disabled','welcome','dialog-login','dialog-view','close'];
-     *    var exists1 = SIGER.in_array('welcome', arr);
-     *    var exists2 = SIGER.in_array('welCOME', arr);
-     *
-     * Resultado:
-     *    exists1 = true
-     *    exists2 = false
-     *
+     * @param {string} $needle A string a ser encontrada.
+     * @param {Array} $haystack O array a ser verificado.
+     * @example
+     * var arr = ['account disabled','welcome','dialog-login','dialog-view','close'];
+     * var exists1 = SIGER.in_array('welcome', arr); // true
+     * var exists2 = SIGER.in_array('welCOME', arr); // false
+     * @returns {boolean} Verdadeiro ou falso.
      */
-    in_array: function($needle, $haystack){return $haystack.indexOf($needle) > -1},
+    in_array: function ($needle, $haystack) { return $haystack.indexOf($needle) > -1 },
 
-    /*
+    /**
      * SIGER.remove(): Remove um elemento de um Object ou Array pela chave
+     * @param {(Object|Array)} obj O objeto/array.
+     * @param {string} key A chave a ser removida.
+     * @example
+     * var obj = {author:'misteregis',mark:'Siger'};
+     * var arr = ['misteregis', 'Siger'];
+     * obj = SIGER.remove(obj, 'mark');
+     * arr = SIGER.remove(arr, 'Siger');
      *
-     *  Exemplo:
-     *    var obj = {author:'misteregis',mark:'Siger'};
-     *    var arr = ['misteregis', 'Siger'];
-     *    obj = SIGER.remove(obj, 'mark');
-     *    arr = SIGER.remove(arr, 'Siger');
-     *
-     * Resultado:
-     *    obj = {author:"misteregis"}
-     *    arr = ["misteregis"]
-     *
+     * //Resultado:
+     * obj = {author:"misteregis"}
+     * arr = ["misteregis"]
+     * @returns {(Object|Array)} Object/Array
      */
-    remove: function(obj, key){
+    remove: function (obj, key) {
         if (Array.isArray(obj))
             obj.splice(key, 1);
         else if (obj != null && typeof obj == 'object')
@@ -569,17 +624,13 @@ SIGER = Object.assign({
         return obj;
     },
 
-    /*
+    /**
      * SIGER.toDay(): Obtém a date de hoje por extenso
-     *
-     *  Exemplo:
-     *    SIGER.toDay()
-     *
-     * Resultado:
-     *    Niterói, 21 de fevereiro de 2021
-     *
+     * @example
+     * SIGER.toDay(); // Niterói, 5 de agosto de 2022
+     * @return {string}
      */
-    toDay: function(){
+    toDay: function () {
         var today = new Date(),
             dd = today.getDate(),
             month = today.toLocaleString('pt-BR', { month: 'long' }),
@@ -588,23 +639,19 @@ SIGER = Object.assign({
         return 'Niterói, {0} de {1} de {2}'.format(dd, month, yyyy);
     },
 
-    /*
+    /**
      * SIGER.dateObj(): Objeto contendo o dia, mês, ano, hora, minuto e segundos atual
-     *
-     *  Exemplo:
-     *    var d_obj = SIGER.dateObj();
-     *    var ano = d_obj.year;
-     *    var dia = d_obj['month'];
-     *    var minuto = SIGER.dateObj('minute');
-     *
-     * Resultado:
-     *    d_obj = {year: 2020, month: {number: "01", name: "janeiro"}, day: 12, hour: 12, minute: 24,second: 26}
-     *    ano = 2020
-     *    dia = 12
-     *    minuto = 24
-     *
+     * @param {(number|Date|string)} key Pode ser objeto, data ou string.
+     * @param {string} key2 Apenas string.
+     * @param {string} rKey Apenas string.
+     * @example
+     * var d_obj = SIGER.dateObj('obj'); // { "year": 2022, "day": 5, "hour": "15", "minute": "48", "second": "39", … }
+     * var ano = d_obj.year; // 2022
+     * var mes = d_obj['month'].number; // 8
+     * var dia = d_obj['day']; // 5
+     * @returns {Object}
      */
-    dateObj: function(key, key2, rKey){
+    dateObj: function (key, key2, rKey) {
         var d = new Date();
 
         if (key && !isNaN(key)) {
@@ -618,6 +665,7 @@ SIGER = Object.assign({
 
         if (key instanceof Date) {
             d = key;
+
             if (key2) {
                 key = key2;
                 key2 = null;
@@ -625,10 +673,10 @@ SIGER = Object.assign({
         }
 
         if (key === 'timestamp')
-            return Math.floor(d.getTime()/1000);
+            return Math.floor(d.getTime() / 1000);
 
         if (key === 'today')
-            d.setHours(0,0,0,0);
+            d.setHours(0, 0, 0, 0);
 
         if (key === 'yesterday')
             d.setDate(d.getDate() - 1);
@@ -637,7 +685,7 @@ SIGER = Object.assign({
             d.setDate(d.getDate() - 7);
 
         var year = d.getFullYear(),
-            month = d.getMonth()+1,
+            month = d.getMonth() + 1,
             day = d.getDate(),
             hour = d.getHours().zeroPad(2),
             minute = d.getMinutes().zeroPad(2),
@@ -649,13 +697,13 @@ SIGER = Object.assign({
             shortmonth = d.toLocaleString('pt-BR', { month: 'short' }).replace('.', ''),
             shortweekday = d.toLocaleString('pt-BR', { weekday: 'short' }).replace('.', '');
 
-        var obj = { timestamp: Math.floor(d.getTime()/1000), year: year, day: day, hour: hour, minute: minute, second: second };
+        var obj = { timestamp: Math.floor(d.getTime() / 1000), year: year, day: day, hour: hour, minute: minute, second: second };
         obj.weekday = { number: weekday, long: longweekday, short: shortweekday };
         obj.month = { number: month, long: longmonth, short: shortmonth };
-        obj.fulldate = year+month+day+hour+minute+second;
+        obj.fulldate = year + month + day + hour + minute + second;
         obj.ampm = d.getHours() >= 12 ? 'pm' : 'am',
-        obj.ampmupper = obj.ampm.toUpperCase(),
-        obj.date = d;
+            obj.ampmupper = obj.ampm.toUpperCase(),
+            obj.date = d;
 
         if (typeof key == 'string' && key2)
             return SIGER.dateObj(d, key2, key);
@@ -672,37 +720,35 @@ SIGER = Object.assign({
         return d;
     },
 
-    /*
-     * SIGER.formatDate(): Formata data e hora apartir do timestamp.
-     */
     /**
+     * SIGER.formatDate(): Formata data e hora apartir do timestamp.
      * Formata data e hora apartir do timestamp
      * @param {(
-     *      null|
-     *      Date|
-     *      Number|
-     *      String|
-     *      Object.<string,*>
+     *    null|
+     *    Date|
+     *    number|
+     *    string|
+     *    Object.<string,*>
      * )} $timestamp                                            Pode ser um objeto JSON, Date, string ou número (timestamp).
-     * @param {String} $format                                  Formata a string (exemplo: dd/mm/YYYY)
+     * @param {string} $format                                  Formata a string (exemplo: dd/mm/YYYY)
      * @param {Boolean} $extend                                 Extende ou não a string.
      * @param {Boolean} $toLower                                Retorna tudo minúsculo (se verdadeiro).
      * @param {Boolean} $short                                  Retorna uma string curta (se verdadeiro).
-     * @returns {String}
+     * @returns {string}
      */
-    formatDate: function($timestamp, $format, $extend, $toLower, $short){
-        var defaults = {timestamp:null,format:null,extend:false,toLower:false,short:false};
+    formatDate: function ($timestamp, $format, $extend, $toLower, $short) {
+        var defaults = { timestamp: null, format: null, extend: false, toLower: false, short: false };
         var s = {};
 
         if (typeof $timestamp === 'number' || typeof $timestamp === 'string')
             $timestamp = SIGER.dateObj($timestamp);
 
         if ($timestamp instanceof Date)
-            $timestamp = Math.floor($timestamp.getTime()/1000);
+            $timestamp = Math.floor($timestamp.getTime() / 1000);
 
         if ($timestamp instanceof Object)
             if ($timestamp.timestamp instanceof Date)
-                $timestamp.timestamp = Math.floor($timestamp.timestamp.getTime()/1000);
+                $timestamp.timestamp = Math.floor($timestamp.timestamp.getTime() / 1000);
 
         if (typeof $timestamp === 'object')
             s = Object.assign(defaults, $timestamp);
@@ -718,7 +764,7 @@ SIGER = Object.assign({
         if (!s.timestamp) s.timestamp = Date.now();
 
         var $dd = SIGER.dateObj(s.timestamp, 'obj');
-            $t = $dd.hour+':'+$dd.minute,
+        $t = $dd.hour + ':' + $dd.minute,
             $w = $dd.weekday.long.split('-')[0],
             $m = $dd.month.long,
             $y = $dd.year,
@@ -765,14 +811,14 @@ SIGER = Object.assign({
 
             var regex = eval('/' + Object.keys(map).join('|') + '/gi');
 
-            return s.format.replace(regex, function(matched) {
+            return s.format.replace(regex, function (matched) {
                 return map[matched] ? map[matched] : matched
             });
         }
 
         if (s.short) {
             $r = $d.zeroPad(2) + '/' + $dd.month.number.zeroPad(2) + '/' + $y + ' ' + $t;
-            
+
             if (s.timestamp >= $todayTimestamp)
                 $r = 'Hoje às ' + $t;
             else if (s.timestamp >= $yesterdayTimestamp)
@@ -802,22 +848,24 @@ SIGER = Object.assign({
         return s.toLower ? $r.toLowerCase() : $r.capitalize();
     },
 
-    /*
+    /**
      * SIGER.loadJSON(): Carrega objeto JSON via URL
+     * @param {string} path A URL do arquivo JSON.
+     * @param {function(Object):void} success A função chamada no caso de sucesso.
+     * @param {function(string):void} error A função chamada no caso de erro.
+     * @example
+     * // Arquivo "file.json": { "author": "misteregis", "mark":"Siger" }
+     * SIGER.loadJSON('file.json', function(json){console.log(json)});
      *
-     *  Exemplo:
-     *    file.json = {author:'misteregis',mark:'Siger'};
-     *    SIGER.loadJSON('file.json', function(json){console.log(json)});
-     *
-     * Resultado:
-     *    console: {author:'misteregis',mark:'Siger'}
+     * // Resultado:
+     * // {author:'misteregis',mark:'Siger'}
      *
      */
-    loadJSON: function(path, success, error){
+    loadJSON: function (path, success, error) {
         var r = Math.floor(Math.random() * 99999) + 1;
         var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function()
-        {
+
+        xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     if (success)
@@ -833,113 +881,125 @@ SIGER = Object.assign({
         xhr.send();
     },
 
-    /*
+    /**
      * SIGER.is_numeric(): Verifica se um valor é numéricou ou não, retornando true/false
-     *
-     *  Exemplo:
-     *    SIGER.is_numeric(123456)
-     *    SIGER.is_numeric("123456")
-     *    SIGER.is_numeric("A123456")
-     *
-     * Resultado:
-     *    123456: true
-     *    "123456": true
-     *    "A123456": false
-     *
+     * @param {(string|Number)} n O número a ser verificado.
+     * @example
+     * SIGER.is_numeric(123456); // true
+     * SIGER.is_numeric("123456"); //true
+     * SIGER.is_numeric("A123456"); // false
+     * @returns {boolean} Verdadeiro ou falso.
      */
-    is_numeric: function(n) {return !isNaN(parseFloat(n)) && isFinite(n)},
+    is_numeric: function (n) { return !isNaN(parseFloat(n)) && isFinite(n) },
 
-    /*
+    /**
      * SIGER.JSON.clone(): Clonar objeto (JSON)
+     * @example
+     * var obj = {author:'misteregis',mark:'Siger'}; // contém as chaves (author e mark) e os valores (misteregis e Siger)
+     * var novo_obj = {}; [objeto vazio];
      *
-     *  Exemplo:
-     *    var obj = {author:'misteregis',mark:'Siger'}; [contém as chaves (author e mark) e os valores (misteregis e Siger)]
-     *    var novo_obj = {}; [objeto vazio];
+     * novo_obj = SIGER.JSON.clone(obj);
      *
-     *    novo_obj = SIGER.JSON.clone(obj);
-     *
-     * Resultado:
-     *    novo_obj = {author:'misteregis',mark:'Siger'}; [contém as chaves (author e mark) e os valores (misteregis e Siger)]
-     *
+     * // Resultado:
+     * novo_obj = {author:'misteregis',mark:'Siger'};
+     * @returns {Object} JSON
      */
     JSON: {
-        clone: function(obj){
+        /**
+         * Clona um objeto
+         * @param {Object} obj O objeto a ser clonado.
+         * @returns {Object} O novo objeto.
+         */
+        clone: function (obj) {
             return JSON.parse(JSON.stringify(obj));
         }
     },
 
-    /*
+    /**
      * SIGER.merge(): Junta dois ou mais array ou json object em um
+     * @example
+     * var objA = {author:'misteregis',mark:'Siger'};
+     * var objB = {year:'2020',by:'Siger'};
+     * var objC = {windows:10,x:'x64'};
      *
-     *  Exemplo:
-     *    var objA = {author:'misteregis',mark:'Siger'};
-     *    var objB = {year:'2020',by:'Siger'};
-     *    var objC = {windows:10,x:'x64'};
+     * objAB = SIGER.merge(objA, objB);
+     * objABC = SIGER.merge(objA, objB, objC);
      *
-     *    objAB = SIGER.merge(objA, objB);
-     *    objABC = SIGER.merge(objA, objB, objC);
-     *
-     * Resultado:
-     *    objAB = {author: "misteregis", mark: "Siger", year: "2020", by: "Siger"};
-     *    objABC = {author: "misteregis", mark: "Siger", year: "2020", by: "Siger", windows: 10, x: "x64"};
-     *
+     * // Resultado:
+     * // objAB = {author: "misteregis", mark: "Siger", year: "2020", by: "Siger"};
+     * // objABC = {author: "misteregis", mark: "Siger", year: "2020", by: "Siger", windows: 10, x: "x64"};
+     * @returns {Object} Um novo objeto.
      */
-    merge: function() {
+    merge: function () {
         var obj = arguments[0] || null;
+
         if (arguments.length > 1)
-            for(var i = 1; i < arguments.length; i++)
+            for (var i = 1; i < arguments.length; i++)
                 for (var key in arguments[i])
                     obj[key] = arguments[i][key];
+
         return obj;
     },
 
-    /*
+    /**
      * SIGER.toBool(): Converte string boolean string ('true', 'false') para boolean
-     *
-     *  Exemplo:
-     *    var _f = SIGER.toBool('false');
-     *    var _t = SIGER.toBool('true');
-     *
-     * Resultado:
-     *    _f = false;
-     *    _t = true;
-     *
+     * @param {string} $bool O boolean em string.
+     * @example
+     * var _f = SIGER.toBool('false'); // false
+     * var _t = SIGER.toBool('true'); // true
+     * @returns {boolean} Verdadeiro ou falso.
      */
-    toBool: function($bool) {return JSON.parse($bool.toString().toLowerCase())},
+    toBool: function ($bool) { return JSON.parse($bool.toString().toLowerCase()) },
 
-    setTheme: function($theme) {
-        var _theme =  SIGER.get('theme');
+    /**
+     * Alterna o modo de cores (dark/light)
+     * @param {string} $theme O tema (dark, light, toggle).
+     * @returns {void}
+     */
+    setTheme: function ($theme) {
+        var _theme = SIGER.get('theme');
+
         if ($theme === 'toggle') {
-            var t = {dark: 'light', light: 'dark'}
+            var t = { dark: 'light', light: 'dark' };
             $theme = t[_theme];
         }
+
         if ($theme) {
-            SIGER.set('theme', $theme)
-            SIGER.cookie('theme', $theme)
+            SIGER.set('theme', $theme);
+            SIGER.cookie('theme', $theme);
         }
+
         if (!$theme && !_theme) {
-            $theme = document.body.getAttribute('data-theme')
-            SIGER.cookie('theme', $theme)
-            SIGER.set('theme', $theme)
+            $theme = document.body.getAttribute('data-theme');
+            SIGER.cookie('theme', $theme);
+            SIGER.set('theme', $theme);
         } else {
-            document.body.setAttribute('data-theme', ($theme || SIGER.get('theme')))
+            document.body.setAttribute('data-theme', ($theme || SIGER.get('theme')));
         }
     },
 
-    /*
+    /**
      * SIGER.cookie(): Cria, obtém ou exclui um cookie
-     *
-     *  Exemplos:
-     *    SIGER.cookie('tema', 'light', '3'); // Irá criar um cookie com nome "tema", valor "light" e duração "3 dias"
-     *    SIGER.cookie('tema'); // Irá obter o valor do cookie "tema", você também pode obter valor usando SIGER.cookie('get', 'tema');
-     *    SIGER.cookie('delete', 'tema'); // Irá excluir o cookie "tema", você também pode excluir usando SIGER.cookie(null, 'tema');
-     *
+     * @param {string} name O nome do Cookie.
+     * @param {(string|number)} value O valor do Cookie.
+     * @param {(string|number)} days O número de dias até expirar o Cookie (padrão 360).
+     * @example
+     * SIGER.cookie('tema', 'light', '3'); // Irá criar um cookie com nome "tema", valor "light" e duração "3 dias"
+     * SIGER.cookie('tema'); // Irá obter o valor do cookie "tema", você também pode obter valor usando SIGER.cookie('get', 'tema');
+     * SIGER.cookie('delete', 'tema'); // Irá excluir o cookie "tema", você também pode excluir usando SIGER.cookie(null, 'tema');
+     * @returns {string=}
      */
-    cookie: function(name, value, days) {
+    cookie: function (name, value, days) {
         days = days ? days : 360
 
-        var path = new URL(window.location).pathname,
-            cookie = {
+        var path = new URL(window.location).pathname, cookie = {
+            /**
+             * Obtém um cookie
+             * @param {string} n Nome do cookie.
+             * @example
+             * SIGER.cookie('tema'); // Irá obter o valor do cookie "tema", você também pode obter valor usando SIGER.cookie('get', 'tema');
+             * @returns {string} O valor do cookie.
+             */
             get: function(n){
                 if (n) name = n
                 var nameEQ = name + "="
@@ -951,6 +1011,16 @@ SIGER = Object.assign({
                 }
                 return null
             },
+            /**
+             * Cria um cookie
+             * @param {string} n Nome do Cookie.
+             * @param {(string|number)} v Valor do Cookie.
+             * @param {(string|number)} d Número de dias até expirar o Cookie (padrão 360).
+             * @param {boolean=} x Verdadeiro para excluir o cookie.
+             * @example
+             * SIGER.cookie('tema', 'light', '3'); // Irá criar um cookie com nome "tema", valor "light" e duração "3 dias"
+             * @returns {void}
+             */
             set: function(n,d){
                 if (n) name = n
 
@@ -967,28 +1037,40 @@ SIGER = Object.assign({
                 else
                     document.cookie = name + "=" + value + expires + "; path=" + path
             },
+            /**
+             * Obtém um cookie
+             * @param {string} name Nome do cookie.
+             * @example
+             * SIGER.cookie('delete', 'tema'); // Irá excluir o cookie "tema", você também pode excluir usando SIGER.cookie(null, 'tema');
+             * @returns {void}
+             */
             delete: function(name){
                 cookie.set(name,1)
             }
         }
 
         if (name === null)
-            return cookie.delete(value)
+            return cookie.delete(value);
 
         if ($.isFunction(cookie[name]))
-            return cookie[name](value)
+            return cookie[name](value);
 
         if (value)
-            cookie.set()
+            cookie.set();
 
-        return cookie.get(name)
+        return cookie.get(name);
     },
 
     /**
-     * Formata data e hora apartir do timestamp
-     * @param {(String|Number)} $start                        O valor inicial do range.
-     * @param {(String|Number)} $end                          O valor final do range.
-     * @returns {Array}
+     * Cria um array contendo uma faixa de elementos
+     * @param {(string|number)} start O primeiro valor da sequência.
+     * @param {(string|number)} end O último valor da sequência.
+     * @param {number} step Se o parâmetro "step" for especificado,
+     * será usado como o incremento entre os elementos da sequência.
+     *
+     * "step" deve ser um inteiro positivo.
+     * Se não for especificado, "step" terá valor igual a 1.
+     * @returns {Array} Retorna um array com elementos iniciando com o valor "start" até o valor "end", inclusive.
      */
     range: function(start, end) {
         var arr = [], count = end - start + 1;
@@ -999,14 +1081,24 @@ SIGER = Object.assign({
 
     /**
      * Salva o conteúdo de uma tabela (thead, tbody) como CSV.
-     * 
-     * Você pode excluir colunas passando o índice e também pode passar um seletor.
-     * 
-     * - Exemplo: _SIGER.saveCsv(0, ".table", 2);_
-     * 
-     * O exemplo acima irá pegar os dados da tabela com a classe ".table", exceto da primeira e terceira coluna (0 e 2).
+     *
+     * Você pode especificar colunas passando os índices e também pode passar um seletor.
+     * @example
+     * SIGER.saveCsv("table");
+     * // O exemplo acima irá pegar os dados de todas as tabelas.
+     *
+     * SIGER.saveCsv("#info", { name: "CSV_Info" });
+     * // O exemplo acima irá pegar os dados da tabela com ID "info" e salvar como "CSV_Info.csv".
+     *
+     * SIGER.saveCsv({ name: "MyTable", table: ".info", columns: [ 0, 2, 4 ] });
+     * // O exemplo acima irá pegar os dados apenas das clunas 0, 2 e 4 (primeira, terceira e quinta coluna)
+     * // das tabelas com a classe "info" e salvar como "MyTable.csv".
+     *
+     * SIGER.saveCsv(0, ".table", 2);
+     * // O exemplo acima irá pegar os dados apenas das clunas 0 e 2 (primeira e terceira coluna)
+     * // das tabelas com a classe "table".
      */
-    saveCsv: function() {
+    saveCsv: function () {
         var file = 'data_' + SIGER.formatDate({format: 'YmdHi'}) + '.csv',
             link = document.createElement('a'),
             $element = 'table',
@@ -1107,7 +1199,7 @@ SIGER = Object.assign({
     }
 }, SIGER);
 
-window.onload = function() {
+window.onload = function () {
     SIGER.setTheme();
 
     __call({
