@@ -2,7 +2,7 @@
 
 /** Siger's Template Class
  *
- * @version: 1.0.2
+ * @version: 1.0.3
  * @since: 1.0
  * @author misteregis (https://siger.win)
  *
@@ -21,7 +21,7 @@ class Template
      *
      * @var string|array
      */
-    private mixed $menu_list;
+    private $menu_list;
 
     /**
      * Conterá o código HTML que será adicionado ao menu (à direita)
@@ -70,7 +70,7 @@ class Template
      *
      * @var string
      */
-    private string $head = "<meta charset=utf-8>
+    protected string $head = "<meta charset=utf-8>
         <title>{title} - ® MS ® Siger</title>
         <meta name=\"description\" content=\"{title} by Misteregis\">
         <meta name=\"author\" content=\"Misteregis\">
@@ -90,7 +90,7 @@ class Template
      *
      * @var string
      */
-    private string $body = '
+    protected string $body = '
         <!-- Wrap all page content here -->
         <div id="wrap">
 
@@ -126,7 +126,7 @@ class Template
      *
      * @var string
      */
-    private string $footer = '<div id="footer">
+    protected string $footer = '<div id="footer">
             <div class="container">
                 <p class="text-muted credit">Desenvolvido por <a href="#" target="_blank">Misteregis</a>.</p>
                 <div id="pageload"></div>
@@ -228,10 +228,10 @@ class Template
     /**
      * Define a versão no final da url do arquivo
      *
-     * @param  mixed $v A versão do arquivo.
+     * @param  int|string $v A versão do arquivo.
      * @return Template
      */
-    public function setVersion(mixed $v):Template
+    public function setVersion($v):Template
     {
         $this->version = "?v={$v}";
 
@@ -284,7 +284,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setPrefetch(mixed $prefetch, bool $version = true):Template
+    public function setPrefetch($prefetch, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -303,7 +303,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setCSS(mixed $css, bool $version = true):Template
+    public function setCSS($css, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -322,7 +322,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setJS(mixed $js, bool $version = true):Template
+    public function setJS($js, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
@@ -344,7 +344,7 @@ class Template
      * @param  bool $version Exibe ou não a versão no final do link (url).
      * @return Template
      */
-    public function setJSHeader(mixed $js, bool $file = true, bool $version = true):Template
+    public function setJSHeader($js, bool $file = true, bool $version = true):Template
     {
         $v = $version ? $this->version : "";
 
